@@ -51,12 +51,12 @@
     "appId": "com.desktoppet.ai",
     "productName": "DesktopPet AI",
     "publish": null,
-    "asar": false,
     "directories": {
-      "output": "dist/release"
+      "output": "release-build"
     },
     "files": [
-      "dist/**/*",
+      "dist/main/**/*",
+      "dist/renderer/**/*",
       "resources/**/*",
       "package.json"
     ],
@@ -71,15 +71,8 @@
       }
     ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": "portable",
       "icon": "resources/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "DesktopPet AI"
     }
   }
 }
