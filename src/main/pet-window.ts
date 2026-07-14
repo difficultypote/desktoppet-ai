@@ -26,14 +26,13 @@ export function createPetWindow(): BrowserWindow {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false, // 允许 file:// 协议加载 ES module
     },
   });
 
-  // 开发模式加载 Vite dev server，生产模式加载打包后的文件
+  // 开发模式加载 Vite dev server，生产模式用 app:// 协议
   process.env.ELECTRON_RENDERER_URL
     ? win.loadURL(process.env.ELECTRON_RENDERER_URL + '/pet/index.html')
-    : win.loadFile(path.join(__dirname, '../renderer/pet/index.html'));
+    : win.loadURL('app://renderer/pet/index.html');
 
   // Windows: 设置鼠标穿透，让点击穿过宠物窗口
   // forward: true 允许鼠标事件转发到渲染层（用于检测悬停）

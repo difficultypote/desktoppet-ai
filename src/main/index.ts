@@ -3,7 +3,7 @@
 // 创建两个窗口 + 托盘 + IPC + HTTP 服务器
 // ============================================================
 
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, protocol, net } from 'electron';
 import path from 'path';
 import { createPetWindow } from './pet-window';
 import { createConfigWindow } from './config-window';
@@ -22,6 +22,33 @@ app.commandLine.appendSwitch('ignore-certificate-errors');
 // 开发模式使用项目内 .electron-data 目录
 if (!app.isPackaged) { app.setPath('userData', path.join(process.cwd(), '.electron-data')); }
 
+// ============================================================
+// 注册自定义协议 app://
+// 生产模式下用 app://renderer/pet/index.html 代替 file:// 协议
+// 解决 file:// 协议下 ES module 无法加载的问题
+// ============================================================
+let rendererBasePath: string;
+
+if (app.isPackaged) {
+  rendererBasePath = path.join(__dirname, '../renderer');
+} else {
+  rendererBasePath = path.join(__dirname, '../../out/renderer');
+}
+
+// 开发模式下注册标准协议，生产模式也用标准协议（支持 fetch/import）
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'app',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      stream: true,
+      bypassCSP: true,
+    },
+  },
+]);
+
 // 禁用硬件加速可能导致的透明窗口问题（按需启用）
 // app.disableHardwareAcceleration();
 
@@ -30,6 +57,18 @@ let configWin: BrowserWindow | null = null;
 
 app.whenReady().then(() => {
   console.log('[DesktopPet] App ready, initializing...');
+
+  // 注册 app:// 协议处理器
+  protocol.handle('app', (request) => {
+    // 将 app://renderer/pet/index.html 转换为文件路径
+    const url = new URL(request.url);
+    const relativePath = url.pathname.replace(/^\//, '');
+    const filePath = path.join(rendererBasePath, relativePath);
+
+    console.log(`[DesktopPet] Protocol: ${request.url} -> ${filePath}`);
+    return net.fetch(`file://${filePath.replace(/\\/g, '/')}`);
+  });
+  console.log('[DesktopPet] Protocol app:// registered');
 
   try {
     // 确保默认宠物存在

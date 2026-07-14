@@ -17,13 +17,12 @@ export function createConfigWindow(): BrowserWindow {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false, // 允许 file:// 协议加载 ES module
     },
   });
 
   process.env.ELECTRON_RENDERER_URL
     ? win.loadURL(process.env.ELECTRON_RENDERER_URL + '/config/index.html')
-    : win.loadFile(path.join(__dirname, '../renderer/config/index.html'));
+    : win.loadURL('app://renderer/config/index.html');
 
   // 关闭时隐藏而不是退出（保持托盘运行）
   win.on('close', (e) => {
