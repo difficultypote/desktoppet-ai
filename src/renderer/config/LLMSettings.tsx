@@ -4,6 +4,7 @@ import { DEFAULT_LLM_CONFIG, HTTP_SERVER_PORT } from '../../shared/constants';
 
 /** 预设 LLM 接口配置 */
 const LLM_PRESETS: { name: string; apiEndpoint: string; model: string }[] = [
+  { name: '魔搭社区', apiEndpoint: 'https://api-inference.modelscope.cn/v1', model: 'Qwen/Qwen3.5-397B-A17B' },
   { name: 'OpenAI', apiEndpoint: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
   { name: 'DeepSeek', apiEndpoint: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
   { name: 'Moonshot', apiEndpoint: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' },

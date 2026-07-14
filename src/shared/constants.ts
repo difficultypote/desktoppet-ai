@@ -139,10 +139,11 @@ export const HISTORY_FILENAME = 'history.json';
 // ============================================================
 
 export const DEFAULT_LLM_CONFIG = {
-  apiEndpoint: 'https://api.openai.com/v1',
-  apiKey: '',
-  model: 'gpt-4o-mini',
-  systemPrompt: '你是一个友好的桌面助手。',
+  configVersion: 2, // 版本号变化时自动重置为默认值
+  apiEndpoint: 'https://api-inference.modelscope.cn/v1',
+  apiKey: 'ms-55454bd1-67f6-4377-8a55-fc06e966dec8',
+  model: 'Qwen/Qwen3.5-397B-A17B',
+  systemPrompt: '你是一个友好的桌面宠物助手，请用简洁可爱的语气回答问题。',
   temperature: 0.7,
   maxTokens: 2048,
   animationFps: 12,

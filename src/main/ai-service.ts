@@ -19,7 +19,12 @@ export function loadConfig(): LLMConfig {
   }
   try {
     const raw = fs.readFileSync(configPath, 'utf-8');
-    return { ...DEFAULT_LLM_CONFIG, ...JSON.parse(raw) };
+    const saved = JSON.parse(raw);
+    // 版本号变化时自动重置为默认值（携带魔搭 API key 等新默认配置）
+    if (!saved.configVersion || saved.configVersion !== DEFAULT_LLM_CONFIG.configVersion) {
+      return { ...DEFAULT_LLM_CONFIG };
+    }
+    return { ...DEFAULT_LLM_CONFIG, ...saved };
   } catch {
     return { ...DEFAULT_LLM_CONFIG };
   }

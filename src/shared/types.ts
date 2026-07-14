@@ -36,6 +36,8 @@ export interface PetMetadata {
 
 /** LLM API 配置 */
 export interface LLMConfig {
+  /** 配置版本号，变化时自动重置为默认值 */
+  configVersion?: number;
   apiEndpoint: string;
   apiKey: string;
   model: string;
