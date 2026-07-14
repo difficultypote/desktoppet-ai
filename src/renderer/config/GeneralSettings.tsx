@@ -104,7 +104,7 @@ export default function GeneralSettings() {
           <input
             type="range"
             min="1"
-            max="30"
+            max="10"
             value={fps}
             onChange={handleFpsChange}
             className="fps-slider"
@@ -112,7 +112,7 @@ export default function GeneralSettings() {
           <span className="fps-label">快</span>
         </div>
         <div className="fps-presets">
-          {[6, 12, 18, 24].map((preset) => (
+          {[2, 4, 6, 8, 10].map((preset) => (
             <button
               key={preset}
               className={`fps-preset-btn ${fps === preset ? 'active' : ''}`}

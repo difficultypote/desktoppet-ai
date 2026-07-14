@@ -23,8 +23,8 @@ export const TOTAL_FRAMES = SPRITE_COLS * SPRITE_ROWS; // 72
 // 动画常量
 // ============================================================
 
-/** 默认帧率（调慢 30%：12 → 8） */
-export const DEFAULT_FPS = 8;
+/** 默认帧率（1-10 范围，默认 6） */
+export const DEFAULT_FPS = 6;
 /** 空闲随机动画间隔（毫秒） */
 export const IDLE_RANDOM_INTERVAL = 15000;
 /** 欢呼动画持续时间（毫秒） */
@@ -139,12 +139,12 @@ export const HISTORY_FILENAME = 'history.json';
 // ============================================================
 
 export const DEFAULT_LLM_CONFIG = {
-  configVersion: 3, // v3: 动画 FPS 调慢 + AI 服务修复
+  configVersion: 4, // v4: FPS 1-10 范围 + UI 美化
   apiEndpoint: 'https://api-inference.modelscope.cn/v1',
   apiKey: 'ms-55454bd1-67f6-4377-8a55-fc06e966dec8',
   model: 'Qwen/Qwen3.5-397B-A17B',
   systemPrompt: '你是一个友好的桌面宠物助手，请用简洁可爱的语气回答问题。',
   temperature: 0.7,
   maxTokens: 2048,
-  animationFps: 8,
+  animationFps: 6,
 };
