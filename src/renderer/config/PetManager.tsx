@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { PetMetadata, PetPackage, ImportStep } from '../shared/types';
-import { HTTP_SERVER_PORT } from '../shared/constants';
+import type { PetMetadata, PetPackage, ImportStep } from '../../shared/types';
+import { HTTP_SERVER_PORT } from '../../shared/constants';
 import PreviewPanel from './PreviewPanel';
 
 /** 上传步骤模板 */

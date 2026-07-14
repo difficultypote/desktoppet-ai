@@ -4,7 +4,7 @@
 // 优先级：codex > live2d > shimeji > gif > single > frames > unknown
 // ============================================================
 
-import type { PetFormat } from '../../renderer/shared/types';
+import type { PetFormat } from '../../shared/types';
 
 /** 支持的图片扩展名 */
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];

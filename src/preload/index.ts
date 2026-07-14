@@ -4,7 +4,7 @@
 // ============================================================
 
 import { contextBridge, ipcRenderer } from 'electron';
-import type { PetAPI, ConfigAPI } from '../renderer/shared/types';
+import type { PetAPI, ConfigAPI } from '../shared/types';
 
 // ---- 桌宠窗口 API ----
 const petAPI: PetAPI = {

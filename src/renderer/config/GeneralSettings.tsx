@@ -4,8 +4,8 @@
 // ============================================================
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { LLMConfig } from '../shared/types';
-import { DEFAULT_FPS } from '../shared/constants';
+import type { LLMConfig } from '../../shared/types';
+import { DEFAULT_FPS } from '../../shared/constants';
 
 export default function GeneralSettings() {
   const [config, setConfig] = useState<LLMConfig | null>(null);

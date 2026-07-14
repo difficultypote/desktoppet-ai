@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { LLMConfig } from '../shared/types';
-import { DEFAULT_LLM_CONFIG, HTTP_SERVER_PORT } from '../shared/constants';
+import type { LLMConfig } from '../../shared/types';
+import { DEFAULT_LLM_CONFIG, HTTP_SERVER_PORT } from '../../shared/constants';
 
 /** 预设 LLM 接口配置 */
 const LLM_PRESETS: { name: string; apiEndpoint: string; model: string }[] = [

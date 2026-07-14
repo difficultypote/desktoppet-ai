@@ -5,8 +5,8 @@
 // ============================================================
 
 import { useState, useEffect, useRef } from 'react';
-import type { PetAnimationState } from '../shared/types';
-import { SPRITE_COLS, DEFAULT_FPS, STATE_FRAME_COUNTS } from '../shared/constants';
+import type { PetAnimationState } from '../../shared/types';
+import { SPRITE_COLS, DEFAULT_FPS, STATE_FRAME_COUNTS } from '../../shared/constants';
 
 /**
  * 帧动画 Hook

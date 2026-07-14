@@ -3,12 +3,12 @@
 // 兼容 OpenAI 格式的 /v1/chat/completions 接口
 // ============================================================
 
-import type { LLMConfig, ChatMessage, AIServiceState } from '../renderer/shared/types';
-import { DEFAULT_LLM_CONFIG } from '../renderer/shared/constants';
+import type { LLMConfig, ChatMessage, AIServiceState } from '../shared/types';
+import { DEFAULT_LLM_CONFIG } from '../shared/constants';
 import fs from 'fs';
 import path from 'path';
 import { getConfigDir } from './pet-loader';
-import { CONFIG_FILENAME, HISTORY_FILENAME } from '../renderer/shared/constants';
+import { CONFIG_FILENAME, HISTORY_FILENAME } from '../shared/constants';
 
 // ---- 配置读写 ----
 

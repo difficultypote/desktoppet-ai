@@ -7,8 +7,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { app } from 'electron';
-import type { PetMetadata } from '../renderer/shared/types';
-import { CODEX_PETS_DIR } from '../renderer/shared/constants';
+import type { PetMetadata } from '../shared/types';
+import { CODEX_PETS_DIR } from '../shared/constants';
 
 /** 获取 Codex 宠物目录的完整路径 */
 export function getPetsDir(): string {
@@ -195,9 +195,7 @@ export function ensureDefaultPet(): void {
   // 尝试从 resources/default-pets 复制默认 spritesheet
   // 开发模式：process.cwd() 指向项目根目录
   // 生产模式：__dirname 指向打包后的目录
-  const builtinSpritePath = process.env.NODE_ENV === 'development'
-    ? path.join(process.cwd(), 'resources', 'default-pets', 'spritesheet.png')
-    : path.join(__dirname, '..', 'resources', 'default-pets', 'spritesheet.png');
+  const builtinSpritePath = app.isPackaged ? path.join(__dirname, '../../resources/default-pets/spritesheet.png') : path.join(process.cwd(), 'resources', 'default-pets', 'spritesheet.png');
   const targetSpritePath = path.join(defaultPetDir, 'spritesheet.png');
 
   if (fs.existsSync(builtinSpritePath) && !fs.existsSync(targetSpritePath)) {

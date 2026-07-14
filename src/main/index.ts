@@ -20,9 +20,7 @@ app.commandLine.appendSwitch('ignore-certificate-errors');
 
 // 将用户数据目录设置到系统 AppData（打包后可正常写入）
 // 开发模式使用项目内 .electron-data 目录
-if (process.env.NODE_ENV === 'development') {
-  app.setPath('userData', path.join(process.cwd(), '.electron-data'));
-}
+if (!app.isPackaged) { app.setPath('userData', path.join(process.cwd(), '.electron-data')); }
 
 // 禁用硬件加速可能导致的透明窗口问题（按需启用）
 // app.disableHardwareAcceleration();

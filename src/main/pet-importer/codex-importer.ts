@@ -6,8 +6,8 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import type { PetMetadata } from '../../renderer/shared/types';
-import { validateSpritesheetSize } from '../../renderer/shared/pet-utils';
+import type { PetMetadata } from '../../shared/types';
+import { validateSpritesheetSize } from '../../shared/pet-utils';
 import type { ImporterResult } from './sprite-builder';
 
 /** 支持的 spritesheet 文件名 */

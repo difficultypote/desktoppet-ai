@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import type { ChatMessage, AIServiceState } from '../shared/types';
-import { HTTP_SERVER_PORT } from '../shared/constants';
+import type { ChatMessage, AIServiceState } from '../../shared/types';
+import { HTTP_SERVER_PORT } from '../../shared/constants';
 
 /**
  * ChatHistory — 对话历史页面

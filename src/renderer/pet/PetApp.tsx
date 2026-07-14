@@ -5,12 +5,12 @@
 // ============================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { PetAnimationState, PetMetadata, PetTask } from '../shared/types';
+import type { PetAnimationState, PetMetadata, PetTask } from '../../shared/types';
 import {
   DEFAULT_FPS,
   STATE_TEXT_MAP,
   HTTP_SERVER_PORT,
-} from '../shared/constants';
+} from '../../shared/constants';
 import { PetCanvas } from './PetCanvas';
 import { SpeechBubble } from './SpeechBubble';
 

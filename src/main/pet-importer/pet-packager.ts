@@ -6,11 +6,11 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import type { PetMetadata, PetPackage } from '../../renderer/shared/types';
+import type { PetMetadata, PetPackage } from '../../shared/types';
 import {
   validateSpritesheetSize,
   ensureUniqueId,
-} from '../../renderer/shared/pet-utils';
+} from '../../shared/pet-utils';
 import { listPets } from '../pet-loader';
 
 /** spritesheet 文件名 */

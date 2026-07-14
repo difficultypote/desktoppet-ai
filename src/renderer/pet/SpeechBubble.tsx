@@ -4,7 +4,7 @@
 // ============================================================
 
 import React from 'react';
-import type { PetTask } from '../shared/types';
+import type { PetTask } from '../../shared/types';
 
 interface SpeechBubbleProps {
   /** 状态文本（如"正在思考…"） */

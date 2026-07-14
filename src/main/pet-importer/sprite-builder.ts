@@ -4,7 +4,7 @@
 // ============================================================
 
 import sharp from 'sharp';
-import type { PetMetadata } from '../../renderer/shared/types';
+import type { PetMetadata } from '../../shared/types';
 import {
   SPRITE_SHEET_WIDTH,
   SPRITE_SHEET_HEIGHT,
@@ -12,7 +12,7 @@ import {
   FRAME_HEIGHT,
   SPRITE_COLS,
   SPRITE_ROWS,
-} from '../../renderer/shared/constants';
+} from '../../shared/constants';
 
 /** 支持的图片扩展名 */
 export const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.bmp', '.webp'];

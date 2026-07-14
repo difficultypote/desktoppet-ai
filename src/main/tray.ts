@@ -11,9 +11,7 @@ export function createTray(
 ): Tray {
   // 尝试加载托盘图标，如果不存在则使用空图标
   let icon: Electron.NativeImage;
-  const iconPath = process.env.NODE_ENV === 'development'
-    ? path.join(process.cwd(), 'resources', 'tray-icon.png')
-    : path.join(__dirname, '..', 'resources', 'tray-icon.png');
+  const iconPath = app.isPackaged ? path.join(__dirname, '../../resources/tray-icon.png') : path.join(process.cwd(), 'resources', 'tray-icon.png');
   try {
     icon = nativeImage.createFromPath(iconPath);
     if (icon.isEmpty()) {

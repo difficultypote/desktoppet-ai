@@ -9,8 +9,8 @@ import type {
   AIServiceState,
   PetAnimationState,
   PetMetadata,
-} from '../renderer/shared/types';
-import { STATE_MAP } from '../renderer/shared/constants';
+} from '../shared/types';
+import { STATE_MAP } from '../shared/constants';
 import {
   listPets,
   getCurrentPet,

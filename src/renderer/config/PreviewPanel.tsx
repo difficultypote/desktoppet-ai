@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { PetAnimationState } from '../shared/types';
+import type { PetAnimationState } from '../../shared/types';
 import {
   FRAME_WIDTH,
   FRAME_HEIGHT,
@@ -9,7 +9,7 @@ import {
   STATE_LABELS,
   HTTP_SERVER_PORT,
   DEFAULT_FPS,
-} from '../shared/constants';
+} from '../../shared/constants';
 
 interface PreviewPanelProps {
   petId: string;

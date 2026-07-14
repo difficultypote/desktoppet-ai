@@ -12,9 +12,9 @@
 // ============================================================
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import type { PetAnimationState } from '../shared/types';
-import { FRAME_WIDTH, FRAME_HEIGHT, DEFAULT_FPS } from '../shared/constants';
-import { getSpriteSourceRect } from '../shared/pet-utils';
+import type { PetAnimationState } from '../../shared/types';
+import { FRAME_WIDTH, FRAME_HEIGHT, DEFAULT_FPS } from '../../shared/constants';
+import { getSpriteSourceRect } from '../../shared/pet-utils';
 import { useSpriteAnimation } from './useSpriteAnimation';
 
 interface PetCanvasProps {

@@ -6,12 +6,12 @@
 
 import fs from 'fs';
 import path from 'path';
-import type { PetAnimationState } from '../../renderer/shared/types';
+import type { PetAnimationState } from '../../shared/types';
 import {
   SPRITE_COLS,
   SPRITE_ROWS,
   STATE_ROW_MAP,
-} from '../../renderer/shared/constants';
+} from '../../shared/constants';
 import {
   buildSpritesheet,
   fillMissingFrames,

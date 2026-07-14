@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { SPRITE_COLS, SPRITE_ROWS } from '../../renderer/shared/constants';
+import { SPRITE_COLS, SPRITE_ROWS } from '../../shared/constants';
 import {
   buildSpritesheet,
   fillMissingFrames,

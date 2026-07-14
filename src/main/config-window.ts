@@ -14,17 +14,15 @@ export function createConfigWindow(): BrowserWindow {
     alwaysOnTop: false, // 不置顶
     show: false, // 默认隐藏，通过托盘打开
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    win.loadURL('http://localhost:5173/src/renderer/config/index.html');
-  } else {
-    win.loadFile(path.join(__dirname, '../renderer/config/index.html'));
-  }
+  process.env.ELECTRON_RENDERER_URL
+    ? win.loadURL(process.env.ELECTRON_RENDERER_URL + '/config/index.html')
+    : win.loadFile(path.join(__dirname, '../renderer/config/index.html'));
 
   // 关闭时隐藏而不是退出（保持托盘运行）
   win.on('close', (e) => {
