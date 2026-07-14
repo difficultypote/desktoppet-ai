@@ -130,68 +130,115 @@ export async function chatStream(
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[AI] API error:', response.status, errorText);
+
+      // 如果是参数错误（422），尝试不传 max_tokens 再试一次
+      if (response.status === 422 || response.status === 400) {
+        console.log('[AI] Retrying without max_tokens...');
+        const retryResponse = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: fullMessages.map((m) => ({ role: m.role, content: m.content })),
+            temperature,
+            stream: true,
+          }),
+        });
+
+        if (!retryResponse.ok) {
+          const retryError = await retryResponse.text();
+          callbacks.onError(`API 请求失败 (${retryResponse.status}): ${retryError}`);
+          return;
+        }
+
+        // 使用重试的响应继续处理
+        return handleStreamResponse(retryResponse, callbacks);
+      }
+
       callbacks.onError(`API 请求失败 (${response.status}): ${errorText}`);
       return;
     }
 
-    if (!response.body) {
-      callbacks.onError('API 返回了空响应体');
-      return;
-    }
-
-    // 读取 SSE 流
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let fullContent = '';
-    let hasStartedGenerating = false;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-
-      // 按行处理 SSE 数据
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || ''; // 保留最后不完整的行
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-        const data = trimmed.slice(6); // 去掉 "data: " 前缀
-        if (data === '[DONE]') {
-          callbacks.onState('done', '完成！点击查看结果');
-          callbacks.onDone();
-          return;
-        }
-
-        try {
-          const json = JSON.parse(data);
-          const delta = json.choices?.[0]?.delta;
-
-          if (delta?.content) {
-            if (!hasStartedGenerating) {
-              hasStartedGenerating = true;
-              callbacks.onState('generating', '正在生成…');
-            }
-            fullContent += delta.content;
-            callbacks.onContent(delta.content);
-          }
-        } catch {
-          // 跳过无法解析的行
-        }
-      }
-    }
-
-    // 流结束但未收到 [DONE]
-    if (fullContent) {
-      callbacks.onState('done', '完成！');
-      callbacks.onDone();
-    }
+    return handleStreamResponse(response, callbacks);
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[AI] Network error:', errorMsg);
     callbacks.onError(`网络错误: ${errorMsg}`);
+  }
+}
+
+/**
+ * 处理 SSE 流式响应
+ * 支持 reasoning 模型（reasoning_content）和普通模型（content）
+ */
+async function handleStreamResponse(
+  response: Response,
+  callbacks: ChatStreamCallbacks,
+): Promise<void> {
+  if (!response.body) {
+    callbacks.onError('API 返回了空响应体');
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullContent = '';
+  let hasStartedGenerating = false;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith('data: ')) continue;
+
+      const data = trimmed.slice(6);
+      if (data === '[DONE]') {
+        callbacks.onState('done', '完成！');
+        callbacks.onDone();
+        return;
+      }
+
+      try {
+        const json = JSON.parse(data);
+        const delta = json.choices?.[0]?.delta;
+
+        // 支持 reasoning 模型：优先使用 content，其次 reasoning_content
+        const textChunk = delta?.content || delta?.reasoning_content;
+
+        if (textChunk) {
+          if (!hasStartedGenerating) {
+            hasStartedGenerating = true;
+            callbacks.onState('generating', '正在生成…');
+          }
+          fullContent += textChunk;
+          // 只推送 content 内容（不推送 reasoning_content 的思考过程）
+          if (delta?.content) {
+            callbacks.onContent(delta.content);
+          }
+        }
+      } catch {
+        // 跳过无法解析的行
+      }
+    }
+  }
+
+  // 流结束但未收到 [DONE]
+  if (fullContent) {
+    callbacks.onState('done', '完成！');
+    callbacks.onDone();
+  } else {
+    callbacks.onError('API 返回了空内容');
   }
 }

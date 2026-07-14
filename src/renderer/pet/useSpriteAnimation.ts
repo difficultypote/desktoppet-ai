@@ -32,7 +32,9 @@ export function useSpriteAnimation(
 
     const intervalMs = 1000 / fps;
     const timer = setInterval(() => {
-      setFrameIndex((prev) => (prev + 1) % frameCount);
+      // 使用 ref 确保总是用最新的 frameCount，避免闭包过期
+      const currentCount = frameCountRef.current;
+      setFrameIndex((prev) => (prev + 1) % currentCount);
     }, intervalMs);
 
     return () => clearInterval(timer);
