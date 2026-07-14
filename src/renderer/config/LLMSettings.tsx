@@ -254,9 +254,9 @@ export default function LLMSettings() {
 
         <div className="form-actions">
           <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? '保存中…' : '保存配置'}
+            {saving ? '保存中...' : '保存配置'}
           </button>
-          <button className="btn btn-secondary" onClick={handleTest} disabled={testing}>
+          <button className="btn btn-gold" onClick={handleTest} disabled={testing}>
             {testing ? '测试中…' : '测试连接'}
           </button>
         </div>

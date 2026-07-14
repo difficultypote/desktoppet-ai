@@ -1,24 +1,44 @@
 /* ============================================================
-   pet.css -- 桌宠透明悬浮窗口样式
-   现代毛玻璃 + 渐变风格
+   pet.css — 深色沉浸 + 暖金渐变 + 玻璃拟态
+   桌宠透明悬浮窗口
    ============================================================ */
 
 :root {
-  --pet-primary: #8b5cf6;
-  --pet-primary-light: rgba(139, 92, 246, 0.2);
-  --pet-accent: #6366f1;
-  --pet-bg: rgba(22, 22, 30, 0.88);
-  --pet-border: rgba(255, 255, 255, 0.08);
-  --pet-text: #e8e8ec;
-  --pet-text-dim: rgba(255, 255, 255, 0.4);
-  --pet-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  --pet-radius: 14px;
+  /* 深色基底 */
+  --pet-bg-base: #0D0D0D;
+  --pet-bg-glass: rgba(13, 13, 13, 0.85);
+  --pet-bg-elevated: rgba(22, 22, 24, 0.9);
+
+  /* 暖金渐变 */
+  --pet-gold-1: #F5A623;
+  --pet-gold-2: #C97D2E;
+  --pet-gold-gradient: linear-gradient(135deg, #F5A623, #C97D2E);
+  --pet-gold-glow: rgba(245, 166, 35, 0.15);
+  --pet-amber: rgba(245, 166, 35, 0.12);
+
+  /* 文字 */
+  --pet-text: #FFFFFF;
+  --pet-text-dim: #9A9A9A;
+  --pet-text-faint: #6A6A6A;
+
+  /* 边框 */
+  --pet-border: rgba(255, 255, 255, 0.06);
+  --pet-border-light: rgba(255, 255, 255, 0.1);
+  --pet-border-gold: rgba(245, 166, 35, 0.25);
+
+  /* 阴影 */
+  --pet-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --pet-shadow-gold: 0 4px 20px rgba(245, 166, 35, 0.2);
+
+  /* 圆角 */
+  --pet-radius: 16px;
+
+  /* 字体 */
   --pet-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC',
     'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-html,
-body {
+html, body {
   background: transparent;
   margin: 0;
   padding: 0;
@@ -30,14 +50,8 @@ body {
   font-family: var(--pet-font);
 }
 
-#root {
-  width: 100%;
-  height: 100%;
-}
-
-canvas {
-  display: block;
-}
+#root { width: 100%; height: 100%; }
+canvas { display: block; }
 
 /* ---- 桌宠容器 ---- */
 
@@ -53,12 +67,12 @@ canvas {
   position: absolute;
   bottom: 0;
   right: 0;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
   transition: filter 0.3s ease;
 }
 
 .pet-canvas:hover {
-  filter: drop-shadow(0 6px 20px rgba(139, 92, 246, 0.25));
+  filter: drop-shadow(0 6px 24px rgba(245, 166, 35, 0.2));
 }
 
 /* ---- 状态文本气泡 ---- */
@@ -69,13 +83,13 @@ canvas {
   left: 50%;
   transform: translateX(-50%);
   max-width: 184px;
-  padding: 6px 12px;
-  background: var(--pet-bg);
+  padding: 7px 13px;
+  background: var(--pet-bg-glass);
   color: var(--pet-text);
   font-size: 11px;
   line-height: 1.5;
   font-family: var(--pet-font);
-  border-radius: 10px;
+  border-radius: 12px;
   text-align: center;
   pointer-events: none;
   opacity: 0;
@@ -87,7 +101,8 @@ canvas {
   -webkit-app-region: no-drag;
   border: 1px solid var(--pet-border);
   box-shadow: var(--pet-shadow);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .speech-bubble.visible {
@@ -104,12 +119,9 @@ canvas {
   padding: 8px 10px;
 }
 
-.speech-bubble.tasks::-webkit-scrollbar {
-  width: 3px;
-}
-
+.speech-bubble.tasks::-webkit-scrollbar { width: 3px; }
 .speech-bubble.tasks::-webkit-scrollbar-thumb {
-  background: var(--pet-text-dim);
+  background: var(--pet-text-faint);
   border-radius: 2px;
 }
 
@@ -130,27 +142,15 @@ canvas {
   box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
 }
 
-.task-dot.running,
-.task-dot.review {
-  background: #fbbf24;
+.task-dot.running, .task-dot.review {
+  background: var(--pet-gold-1);
   animation: dotPulse 1s ease-in-out infinite;
 }
 
-.task-dot.failed {
-  background: #ef4444;
-}
-
-.task-dot.waiting {
-  background: #60a5fa;
-}
-
-.task-dot.waving {
-  background: #4ade80;
-}
-
-.task-dot.idle {
-  background: #9ca3af;
-}
+.task-dot.failed { background: #f87171; }
+.task-dot.waiting { background: #60a5fa; }
+.task-dot.waving { background: #4ade80; }
+.task-dot.idle { background: #6A6A6A; }
 
 .task-title {
   overflow: hidden;
@@ -158,38 +158,31 @@ canvas {
   white-space: nowrap;
 }
 
-.status-text {
-  display: inline-block;
-}
+.status-text { display: inline-block; }
 
 /* ---- 右键菜单 ---- */
 
 .context-menu {
   position: absolute;
-  background: var(--pet-bg);
-  border-radius: 12px;
+  background: var(--pet-bg-glass);
+  border-radius: 14px;
   padding: 6px;
-  min-width: 150px;
+  min-width: 160px;
   font-size: 13px;
   font-family: var(--pet-font);
   color: var(--pet-text);
   box-shadow: var(--pet-shadow);
   z-index: 100;
   -webkit-app-region: no-drag;
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--pet-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--pet-border-light);
   animation: menuSlideIn 0.15s ease;
 }
 
 @keyframes menuSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .context-menu-item {
@@ -203,8 +196,8 @@ canvas {
 }
 
 .context-menu-item:hover {
-  background: var(--pet-primary-light);
-  color: #fff;
+  background: var(--pet-amber);
+  color: var(--pet-gold-1);
 }
 
 .context-menu-icon {
@@ -218,24 +211,13 @@ canvas {
 /* ---- 动画 ---- */
 
 @keyframes bubbleFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 @keyframes dotPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 /* ============================================================
@@ -249,7 +231,7 @@ canvas {
   transform: translateX(-50%);
   width: 310px;
   max-height: 380px;
-  background: var(--pet-bg);
+  background: var(--pet-bg-glass);
   border-radius: var(--pet-radius);
   box-shadow: var(--pet-shadow);
   display: flex;
@@ -258,8 +240,9 @@ canvas {
   overflow: hidden;
   animation: chatBubbleSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-app-region: no-drag;
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--pet-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--pet-border-light);
 }
 
 @keyframes chatBubbleSlideIn {
@@ -282,7 +265,7 @@ canvas {
   padding: 10px 14px;
   border-bottom: 1px solid var(--pet-border);
   flex-shrink: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(99, 102, 241, 0.08));
+  background: linear-gradient(135deg, var(--pet-amber), transparent);
 }
 
 .chat-bubble-title {
@@ -299,8 +282,8 @@ canvas {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--pet-primary);
-  box-shadow: 0 0 8px var(--pet-primary);
+  background: var(--pet-gold-gradient);
+  box-shadow: 0 0 8px var(--pet-gold-1);
 }
 
 .chat-bubble-close {
@@ -317,7 +300,7 @@ canvas {
 
 .chat-bubble-close:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* 消息列表 */
@@ -332,26 +315,19 @@ canvas {
   scroll-behavior: smooth;
 }
 
-.chat-bubble-messages::-webkit-scrollbar {
-  width: 4px;
-}
-
-.chat-bubble-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.chat-bubble-messages::-webkit-scrollbar { width: 4px; }
+.chat-bubble-messages::-webkit-scrollbar-track { background: transparent; }
 .chat-bubble-messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 2px;
 }
-
 .chat-bubble-messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .chat-bubble-empty {
   text-align: center;
-  color: var(--pet-text-dim);
+  color: var(--pet-text-faint);
   font-size: 13px;
   padding: 28px 0;
   line-height: 1.6;
@@ -364,20 +340,14 @@ canvas {
   height: 36px;
   margin: 0 auto 12px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--pet-primary), var(--pet-accent));
+  background: var(--pet-gold-gradient);
   opacity: 0.3;
   animation: emptyPulse 2s ease-in-out infinite;
 }
 
 @keyframes emptyPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.5;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.5; }
 }
 
 /* 消息项 */
@@ -390,23 +360,12 @@ canvas {
 }
 
 @keyframes msgSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.chat-msg.user {
-  align-items: flex-end;
-}
-
-.chat-msg.assistant {
-  align-items: flex-start;
-}
+.chat-msg.user { align-items: flex-end; }
+.chat-msg.assistant { align-items: flex-start; }
 
 .chat-msg-text {
   max-width: 85%;
@@ -419,17 +378,18 @@ canvas {
 }
 
 .chat-msg.user .chat-msg-text {
-  background: linear-gradient(135deg, var(--pet-primary), var(--pet-accent));
-  color: #fff;
+  background: var(--pet-gold-gradient);
+  color: #0D0D0D;
+  font-weight: 500;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  box-shadow: var(--pet-shadow-gold);
 }
 
 .chat-msg.assistant .chat-msg-text {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--pet-text);
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--pet-border);
 }
 
 /* 思考中动画 */
@@ -438,37 +398,26 @@ canvas {
   display: flex;
   gap: 5px;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 14px;
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--pet-border);
 }
 
 .chat-msg-thinking .dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--pet-primary);
+  background: var(--pet-gold-1);
   animation: thinkingDot 1.4s ease-in-out infinite;
 }
 
-.chat-msg-thinking .dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.chat-msg-thinking .dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.chat-msg-thinking .dot:nth-child(2) { animation-delay: 0.2s; }
+.chat-msg-thinking .dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes thinkingDot {
-  0%, 60%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
+  0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+  30% { opacity: 1; transform: scale(1.2); }
 }
 
 /* 输入区域 */
@@ -482,8 +431,8 @@ canvas {
 .chat-bubble-input {
   width: 100%;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid var(--pet-border-light);
   border-radius: 10px;
   color: #fff;
   font-size: 13px;
@@ -494,16 +443,10 @@ canvas {
 }
 
 .chat-bubble-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  border-color: var(--pet-gold-1);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px var(--pet-gold-glow);
 }
 
-.chat-bubble-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
-}
-
-.chat-bubble-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.chat-bubble-input::placeholder { color: rgba(255, 255, 255, 0.25); }
+.chat-bubble-input:disabled { opacity: 0.5; cursor: not-allowed; }
