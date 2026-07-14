@@ -13,7 +13,7 @@
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
     "dev:renderer": "vite",
     "dev:main": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
-    "build": "tsc && vite build",
+    "build": "vite build && node scripts/fix-build-paths.js",
     "build:win": "npm run build && electron-builder --win",
     "preview": "vite preview",
     "generate-resources": "node scripts/generate-default-spritesheet.js",
@@ -52,26 +52,24 @@
     "productName": "DesktopPet AI",
     "publish": null,
     "directories": {
-      "output": "release-build"
+      "output": "release-build",
+      "app": "."
     },
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
       "resources/**/*",
-      "package.json"
+      "package.json",
+      "node_modules/**/*",
+      "!node_modules/.cache/**",
+      "!node_modules/.bin/**"
     ],
     "asarUnpack": [
       "**/node_modules/sharp/**",
       "**/node_modules/@img/**"
     ],
-    "extraResources": [
-      {
-        "from": "resources",
-        "to": "resources"
-      }
-    ],
     "win": {
-      "target": "portable",
+      "target": "dir",
       "icon": "resources/icon.png"
     }
   }
