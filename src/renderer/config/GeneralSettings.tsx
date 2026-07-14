@@ -30,22 +30,20 @@ export default function GeneralSettings() {
   const saveFps = useCallback((newFps: number) => {
     if (!config) return;
 
+    // 立即同步更新本地状态，避免 UI 滞后
+    const updated = { ...config, animationFps: newFps };
+    setConfig(updated);
+
     // 通过 HTTP API 保存（更可靠，直接通知桌宠窗口）
+    // HTTP 失败时降级为 IPC 保存
     fetch(`http://localhost:31750/api/pet/fps`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fps: newFps }),
     }).catch(() => {
       // 降级：通过 IPC 保存
-      const updated = { ...config, animationFps: newFps };
       window.configAPI.saveConfig(updated);
-      setConfig(updated);
     });
-
-    // 同时通过 IPC 保存配置
-    const updated = { ...config, animationFps: newFps };
-    window.configAPI.saveConfig(updated);
-    setConfig(updated);
 
     // 显示保存提示
     setSavedHint(true);

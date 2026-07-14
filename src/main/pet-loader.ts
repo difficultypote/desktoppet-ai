@@ -178,7 +178,7 @@ export function ensureDefaultPet(): void {
   // 写入默认 pet.json
   const defaultMetadata: PetMetadata = {
     id: 'default',
-    name: '小助手',
+    name: '歪头',
     description: '默认桌面宠物',
     spritesheet: 'spritesheet.png',
     version: '1.0.0',
