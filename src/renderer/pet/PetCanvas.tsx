@@ -23,6 +23,8 @@ interface PetCanvasProps {
   fps?: number;
   onHoverChange?: (hovered: boolean) => void;
   onContextMenu?: (e: React.MouseEvent) => void;
+  /** 拖拽方向变化回调（拖拽中实时通知方向） */
+  onDragStateChange?: (state: PetAnimationState) => void;
 }
 
 /** 拖拽判定阈值（像素），移动超过此距离才视为拖拽 */
@@ -34,6 +36,7 @@ export const PetCanvas: React.FC<PetCanvasProps> = ({
   fps = DEFAULT_FPS,
   onHoverChange,
   onContextMenu,
+  onDragStateChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -42,10 +45,14 @@ export const PetCanvas: React.FC<PetCanvasProps> = ({
   const mouseDownRef = useRef(false);
   const isDraggingRef = useRef(false);
   const dragStartPosRef = useRef({ x: 0, y: 0 });
+  // 拖拽方向跟踪
+  const lastDragXRef = useRef(0);
+  const currentDragDirRef = useRef<'left' | 'right' | null>(null);
 
   // ref 避免闭包陷阱
   const onHoverChangeRef = useRef(onHoverChange);
   const onContextMenuRef = useRef(onContextMenu);
+  const onDragStateChangeRef = useRef(onDragStateChange);
 
   useEffect(() => {
     onHoverChangeRef.current = onHoverChange;
@@ -53,6 +60,9 @@ export const PetCanvas: React.FC<PetCanvasProps> = ({
   useEffect(() => {
     onContextMenuRef.current = onContextMenu;
   }, [onContextMenu]);
+  useEffect(() => {
+    onDragStateChangeRef.current = onDragStateChange;
+  }, [onDragStateChange]);
 
   const frameIndex = useSpriteAnimation(currentState, fps);
 
@@ -90,24 +100,39 @@ export const PetCanvas: React.FC<PetCanvasProps> = ({
         if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
           // 超过阈值 → 开始拖拽
           isDraggingRef.current = true;
+          lastDragXRef.current = e.clientX;
+          currentDragDirRef.current = null;
           window.petAPI.startWindowDrag();
         }
       }
 
-      // 拖拽中 → 通知主进程移动窗口
+      // 拖拽中 → 通知主进程移动窗口 + 检测方向
       if (isDraggingRef.current) {
         window.petAPI.moveWindow(0, 0);
+
+        // 检测水平拖拽方向
+        const deltaX = e.clientX - lastDragXRef.current;
+        if (Math.abs(deltaX) > 2) {
+          const newDir = deltaX > 0 ? 'right' : 'left';
+          if (newDir !== currentDragDirRef.current) {
+            currentDragDirRef.current = newDir;
+            onDragStateChangeRef.current?.(newDir === 'left' ? 'running-left' : 'running-right');
+          }
+          lastDragXRef.current = e.clientX;
+        }
       }
     };
 
     const handleGlobalMouseUp = () => {
       if (mouseDownRef.current) {
         if (!isDraggingRef.current) {
-          // 未拖拽 → 视为单击 → 打开设置
+          // 未拖拽 → 视为单击 → 打开对话气泡
           window.petAPI.focusApp();
         } else {
-          // 拖拽结束
+          // 拖拽结束 → 恢复 idle
           window.petAPI.endWindowDrag();
+          currentDragDirRef.current = null;
+          onDragStateChangeRef.current?.('idle');
         }
         mouseDownRef.current = false;
         isDraggingRef.current = false;

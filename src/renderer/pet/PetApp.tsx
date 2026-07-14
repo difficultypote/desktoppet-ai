@@ -40,6 +40,9 @@ export const PetApp: React.FC = () => {
   const [fps, setFps] = useState(DEFAULT_FPS);
   const [isVisible, setIsVisible] = useState(true);
 
+  // ---- 拖拽方向覆盖状态（拖拽时优先使用此状态） ----
+  const [dragOverrideState, setDragOverrideState] = useState<PetAnimationState | null>(null);
+
   // ---- 对话气泡状态 ----
   const [chatVisible, setChatVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -133,11 +136,14 @@ export const PetApp: React.FC = () => {
   }, []);
 
   // ---- 空闲随机动画 ----
+  // 拖拽中不触发空闲动画
+  const effectiveState = dragOverrideState ?? currentState;
   useEffect(() => {
     if (idleTimerRef.current) {
       clearTimeout(idleTimerRef.current);
       idleTimerRef.current = null;
     }
+    if (dragOverrideState) return; // 拖拽中不启动空闲定时器
     if (currentState !== 'idle') return;
     const randomInterval = IDLE_MIN_INTERVAL + Math.random() * (IDLE_MAX_INTERVAL - IDLE_MIN_INTERVAL);
     idleTimerRef.current = setTimeout(() => {
@@ -150,7 +156,7 @@ export const PetApp: React.FC = () => {
         idleTimerRef.current = null;
       }
     };
-  }, [currentState]);
+  }, [currentState, dragOverrideState]);
 
   // ---- 空闲动画自动恢复 idle ----
   useEffect(() => {
@@ -158,6 +164,7 @@ export const PetApp: React.FC = () => {
       clearTimeout(stateResetTimerRef.current);
       stateResetTimerRef.current = null;
     }
+    if (dragOverrideState) return; // 拖拽中不启动自动恢复
     const animConfig = IDLE_ANIMATIONS.find((a) => a.state === currentState);
     let duration: number | null = null;
     if (animConfig) duration = animConfig.duration;
@@ -170,7 +177,7 @@ export const PetApp: React.FC = () => {
         stateResetTimerRef.current = null;
       }
     };
-  }, [currentState]);
+  }, [currentState, dragOverrideState]);
 
   // ---- 发送消息 ----
   const handleSend = useCallback(
@@ -187,8 +194,18 @@ export const PetApp: React.FC = () => {
     [chatMessages],
   );
 
+  // ---- 拖拽方向回调 ----
+  const handleDragStateChange = useCallback((state: PetAnimationState) => {
+    if (state === 'idle') {
+      setDragOverrideState(null);
+    } else {
+      setDragOverrideState(state);
+    }
+  }, []);
+
   // ---- 计算气泡显示内容 ----
-  const hoverText = isHovered ? STATE_TEXT_MAP[currentState] : '';
+  const activeState = dragOverrideState ?? currentState;
+  const hoverText = isHovered ? STATE_TEXT_MAP[activeState] : '';
   const displayText = statusText || hoverText;
   const bubbleVisible = (tasks.length > 0 || displayText.length > 0) && !chatVisible;
 
@@ -198,9 +215,10 @@ export const PetApp: React.FC = () => {
     <div className="pet-container">
       <PetCanvas
         image={spriteImage}
-        currentState={currentState}
+        currentState={activeState}
         fps={fps}
         onHoverChange={(hovered) => setIsHovered(hovered)}
+        onDragStateChange={handleDragStateChange}
       />
 
       <SpeechBubble text={displayText} tasks={tasks} visible={bubbleVisible} />
