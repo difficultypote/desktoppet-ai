@@ -26,6 +26,7 @@ export function createPetWindow(): BrowserWindow {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: false, // 允许 file:// 协议加载 ES module
     },
   });
 
