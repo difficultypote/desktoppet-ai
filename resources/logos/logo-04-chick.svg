@@ -1,0 +1,25 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 萌宠几何风 #4: 小鸡 -->
+  <!-- 主体：圆身体 + 小三角嘴 + 小眼睛 + 小脚 -->
+  <g>
+    <!-- 身体 -->
+    <ellipse cx="50" cy="56" rx="34" ry="30" fill="#FDCB6E"/>
+    <!-- 头顶呆毛 -->
+    <path d="M 48 24 L 52 24 L 50 16 Z" fill="#E17055"/>
+    <!-- 嘴巴 -->
+    <polygon points="50,52 58,58 50,64" fill="#E17055"/>
+    <!-- 左眼 -->
+    <circle cx="38" cy="48" r="4.5" fill="#2D2D2D"/>
+    <!-- 右眼 -->
+    <circle cx="62" cy="48" r="4.5" fill="#2D2D2D"/>
+    <!-- 高光 -->
+    <circle cx="39.5" cy="46.5" r="1.5" fill="#FFFFFF"/>
+    <circle cx="63.5" cy="46.5" r="1.5" fill="#FFFFFF"/>
+    <!-- 小脚 -->
+    <rect x="40" y="84" width="6" height="6" rx="1" fill="#E17055"/>
+    <rect x="54" y="84" width="6" height="6" rx="1" fill="#E17055"/>
+    <!-- 腮红 -->
+    <circle cx="28" cy="60" r="4" fill="#FF6B6B" opacity="0.3"/>
+    <circle cx="72" cy="60" r="4" fill="#FF6B6B" opacity="0.3"/>
+  </g>
+</svg>

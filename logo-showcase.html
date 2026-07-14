@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DesktopPet AI - Logo 设计展示</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: #0f0f13;
+    color: #e5e5e5;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FF8C42, #A29BFE, #55EFC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: #888;
+    font-size: 15px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #1a1a22;
+    border-radius: 16px;
+    padding: 32px 24px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .card.selected {
+    border-color: #6C5CE7;
+    box-shadow: 0 0 0 2px rgba(108,92,231,0.3);
+  }
+  .logo-wrap {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    padding: 10px;
+  }
+  .logo-wrap svg {
+    width: 100%;
+    height: 100%;
+  }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .card p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    background: rgba(108,92,231,0.15);
+    color: #A29BFE;
+  }
+  .sizes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 12px;
+    align-items: flex-end;
+  }
+  .size-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .size-demo span {
+    font-size: 10px;
+    color: #666;
+  }
+  .size-demo .icon-box {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .actions {
+    text-align: center;
+    margin-top: 40px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(108,92,231,0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DesktopPet AI Logo 设计</h1>
+  <p>萌宠几何风 - 6 个设计变体，点击选择你喜欢的</p>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="actions">
+  <a class="btn" href="javascript:void(0)" onclick="alert('请告诉我你选择哪个编号的 Logo，我会导出 PNG 并应用到应用中')">确认选择</a>
+</div>
+
+<script>
+const logos = [
+  { id: 1, name: '圆脸猫咪', desc: '橙色猫脸 + 三角耳朵 + 圆点眼睛，经典萌宠形象', color: '#FF8C42', tag: '温暖橙' },
+  { id: 2, name: '圆润小团子', desc: '紫色圆球 + AI 光环 + 大眼睛，科技感萌宠', color: '#A29BFE', tag: '科技紫' },
+  { id: 3, name: '方块宠物', desc: '圆角方块 + 方耳朵 + 方眼睛，像素风格简约', color: '#55EFC4', tag: '清新青' },
+  { id: 4, name: '小鸡', desc: '黄色圆身 + 三角嘴 + 小脚，呆萌可爱', color: '#FDCB6E', tag: '阳光黄' },
+  { id: 5, name: 'AI 芯片宠物', desc: '芯片引脚 + 紫色身体 + 萌脸，AI 与萌宠融合', color: '#8E7CE6', tag: 'AI 芯片' },
+  { id: 6, name: '气泡对话宠物', desc: '渐变粉脸 + 眯眼笑 + 对话气泡 + 星星，对话感强', color: '#FD79A8', tag: '渐变粉' },
+];
+
+const svgFiles = [
+  'resources/logos/logo-01-cat-face.svg',
+  'resources/logos/logo-02-rounded-pet.svg',
+  'resources/logos/logo-03-pixel-pet.svg',
+  'resources/logos/logo-04-chick.svg',
+  'resources/logos/logo-05-ai-pet.svg',
+  'resources/logos/logo-06-bubble-pet.svg',
+];
+
+const grid = document.getElementById('grid');
+let selectedId = null;
+
+logos.forEach((logo, i) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.onclick = () => {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedId = logo.id;
+  };
+
+  card.innerHTML = `
+    <div class="logo-wrap">
+      <img src="${svgFiles[i]}" style="width:100%;height:100%" />
+    </div>
+    <h3>${logo.name}</h3>
+    <p>${logo.desc}</p>
+    <div class="badge">${logo.tag}</div>
+    <div class="sizes">
+      <div class="size-demo">
+        <div class="icon-box" style="width:32px;height:32px"><img src="${svgFiles[i]}" style="width:100%;height:100%"/></div>
+        <span>32px</span>
+      </div>
+      <div class="size-demo">
+        <div class="icon-box" style="width:48px;height:48px"><img src="${svgFiles[i]}" style="width:100%;height:100%"/></div>
+        <span>48px</span>
+      </div>
+      <div class="size-demo">
+        <div class="icon-box" style="width:64px;height:64px"><img src="${svgFiles[i]}" style="width:100%;height:100%"/></div>
+        <span>64px</span>
+      </div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>

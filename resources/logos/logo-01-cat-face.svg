@@ -1,0 +1,26 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 萌宠几何风 #1: 圆脸猫咪 -->
+  <!-- 主体：圆形猫脸 + 三角耳朵 + 圆点眼睛 + 弧线嘴巴 -->
+  <g>
+    <!-- 左耳 -->
+    <polygon points="22,28 36,12 42,32" fill="#FF8C42"/>
+    <!-- 右耳 -->
+    <polygon points="78,28 64,12 58,32" fill="#FF8C42"/>
+    <!-- 脸 -->
+    <circle cx="50" cy="54" r="32" fill="#FFB347"/>
+    <!-- 左眼 -->
+    <circle cx="38" cy="50" r="5" fill="#2D2D2D"/>
+    <!-- 右眼 -->
+    <circle cx="62" cy="50" r="5" fill="#2D2D2D"/>
+    <!-- 眼睛高光 -->
+    <circle cx="40" cy="48" r="1.5" fill="#FFFFFF"/>
+    <circle cx="64" cy="48" r="1.5" fill="#FFFFFF"/>
+    <!-- 鼻子 -->
+    <polygon points="48,60 52,60 50,64" fill="#FF6B6B"/>
+    <!-- 嘴巴 -->
+    <path d="M 42 66 Q 50 72 58 66" fill="none" stroke="#2D2D2D" stroke-width="2" stroke-linecap="round"/>
+    <!-- 腮红 -->
+    <circle cx="28" cy="62" r="4" fill="#FF6B6B" opacity="0.4"/>
+    <circle cx="72" cy="62" r="4" fill="#FF6B6B" opacity="0.4"/>
+  </g>
+</svg>

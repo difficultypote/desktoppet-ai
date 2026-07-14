@@ -1,0 +1,29 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 萌宠几何风 #6: 气泡对话宠物 -->
+  <!-- 主体：圆脸 + 对话气泡 + 渐变 -->
+  <defs>
+    <linearGradient id="grad6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FD79A8"/>
+      <stop offset="100%" style="stop-color:#FDCB6E"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <!-- 对话气泡尾巴 -->
+    <polygon points="38,30 48,30 34,16" fill="#FFFFFF" opacity="0.9"/>
+    <!-- 耳朵 -->
+    <ellipse cx="30" cy="24" rx="7" ry="9" fill="#E84393" transform="rotate(-25 30 24)"/>
+    <ellipse cx="70" cy="24" rx="7" ry="9" fill="#E84393" transform="rotate(25 70 24)"/>
+    <!-- 脸 -->
+    <circle cx="50" cy="56" r="32" fill="url(#grad6)"/>
+    <!-- 眯眼笑 -->
+    <path d="M 33 50 Q 38 45 43 50" fill="none" stroke="#2D2D2D" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 57 50 Q 62 45 67 50" fill="none" stroke="#2D2D2D" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- 嘴 -->
+    <path d="M 42 62 Q 50 70 58 62" fill="none" stroke="#2D2D2D" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- 腮红 -->
+    <circle cx="26" cy="64" r="5" fill="#FFFFFF" opacity="0.35"/>
+    <circle cx="74" cy="64" r="5" fill="#FFFFFF" opacity="0.35"/>
+    <!-- 头顶星星 -->
+    <polygon points="50,12 52,18 58,18 53,22 55,28 50,24 45,28 47,22 42,18 48,18" fill="#FFEAA7" stroke="#E17055" stroke-width="0.5"/>
+  </g>
+</svg>

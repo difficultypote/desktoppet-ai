@@ -1,0 +1,31 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 萌宠几何风 #5: AI 芯片宠物 -->
+  <!-- 主体：圆角方块身体 + 芯片引脚 + 萌脸 -->
+  <g>
+    <!-- 芯片引脚 -->
+    <line x1="18" y1="36" x2="10" y2="36" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="18" y1="50" x2="10" y2="50" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="18" y1="64" x2="10" y2="64" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="82" y1="36" x2="90" y2="36" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="82" y1="50" x2="90" y2="50" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="82" y1="64" x2="90" y2="64" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="36" y1="18" x2="36" y2="10" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <line x1="64" y1="18" x2="64" y2="10" stroke="#2D3436" stroke-width="2" stroke-linecap="round"/>
+    <!-- 耳朵 -->
+    <polygon points="24,26 36,14 40,30" fill="#6C5CE7"/>
+    <polygon points="76,26 64,14 60,30" fill="#6C5CE7"/>
+    <!-- 身体 -->
+    <rect x="18" y="24" width="64" height="60" rx="18" fill="#8E7CE6"/>
+    <!-- 芯片核心 -->
+    <rect x="38" y="44" width="24" height="24" rx="4" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>
+    <!-- 眼睛 -->
+    <circle cx="38" cy="52" r="5" fill="#FFFFFF"/>
+    <circle cx="62" cy="52" r="5" fill="#FFFFFF"/>
+    <circle cx="39" cy="53" r="3" fill="#2D3436"/>
+    <circle cx="63" cy="53" r="3" fill="#2D3436"/>
+    <circle cx="40" cy="52" r="1" fill="#FFFFFF"/>
+    <circle cx="64" cy="52" r="1" fill="#FFFFFF"/>
+    <!-- 嘴 -->
+    <path d="M 42 64 Q 50 70 58 64" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

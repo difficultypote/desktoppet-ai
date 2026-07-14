@@ -13,6 +13,7 @@ export function createConfigWindow(): BrowserWindow {
     frame: true, // 有标题栏
     alwaysOnTop: false, // 不置顶
     show: false, // 默认隐藏，通过托盘打开
+    icon: path.join(__dirname, '../../resources/icon.png'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,

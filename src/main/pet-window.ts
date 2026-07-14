@@ -22,6 +22,7 @@ export function createPetWindow(): BrowserWindow {
     maximizable: false,
     skipTaskbar: true, // 不在任务栏显示
     hasShadow: false,
+    icon: path.join(__dirname, '../../resources/icon.png'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,

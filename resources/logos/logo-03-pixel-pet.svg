@@ -1,0 +1,24 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 萌宠几何风 #3: 几何方块宠物 -->
+  <!-- 主体：圆角方块 + 方耳朵 + 方眼睛 -->
+  <g>
+    <!-- 左耳 -->
+    <rect x="18" y="14" width="16" height="16" rx="4" fill="#00CEC9" transform="rotate(-15 26 22)"/>
+    <!-- 右耳 -->
+    <rect x="66" y="14" width="16" height="16" rx="4" fill="#00CEC9" transform="rotate(15 74 22)"/>
+    <!-- 身体 -->
+    <rect x="18" y="28" width="64" height="56" rx="16" fill="#55EFC4"/>
+    <!-- 左眼 -->
+    <rect x="32" y="46" width="10" height="10" rx="2" fill="#2D2D2D"/>
+    <!-- 右眼 -->
+    <rect x="58" y="46" width="10" height="10" rx="2" fill="#2D2D2D"/>
+    <!-- 高光 -->
+    <rect x="34" y="48" width="3" height="3" rx="1" fill="#FFFFFF"/>
+    <rect x="60" y="48" width="3" height="3" rx="1" fill="#FFFFFF"/>
+    <!-- 嘴 -->
+    <rect x="44" y="62" width="12" height="4" rx="2" fill="#2D2D2D"/>
+    <!-- 腮红 -->
+    <rect x="22" y="60" width="8" height="5" rx="2.5" fill="#FF6B6B" opacity="0.35"/>
+    <rect x="70" y="60" width="8" height="5" rx="2.5" fill="#FF6B6B" opacity="0.35"/>
+  </g>
+</svg>
