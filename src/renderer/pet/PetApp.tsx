@@ -1,11 +1,11 @@
 // ============================================================
 // PetApp.tsx -- 桌宠主组件
-// 管理宠物状态 / 加载 spritesheet / 渲染 PetCanvas + SpeechBubble
-// 处理空闲随机动画 / 监听 IPC 事件（状态 / 任务 / 文本 / 宠物切换 / fps）
+// 管理宠物状态 / 加载 spritesheet / 渲染 PetCanvas + SpeechBubble + ChatBubble
+// 左键点击桌宠弹出对话气泡窗，回车发送消息
 // ============================================================
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import type { PetAnimationState, PetMetadata, PetTask } from '../../shared/types';
+import type { PetAnimationState, PetMetadata, PetTask, ChatMessage } from '../../shared/types';
 import {
   DEFAULT_FPS,
   STATE_TEXT_MAP,
@@ -13,6 +13,7 @@ import {
 } from '../../shared/constants';
 import { PetCanvas } from './PetCanvas';
 import { SpeechBubble } from './SpeechBubble';
+import { ChatBubble } from './ChatBubble';
 
 /** 空闲时随机播放的动画及持续时间 */
 const IDLE_ANIMATIONS: { state: PetAnimationState; duration: number }[] = [
@@ -39,6 +40,12 @@ export const PetApp: React.FC = () => {
   const [fps, setFps] = useState(DEFAULT_FPS);
   const [isVisible, setIsVisible] = useState(true);
 
+  // ---- 对话气泡状态 ----
+  const [chatVisible, setChatVisible] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [streamingText, setStreamingText] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+
   // ---- refs ----
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stateResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,10 +57,12 @@ export const PetApp: React.FC = () => {
         setCurrentPet(pet);
       }
     });
-    // 加载动画帧速
     window.petAPI.getAnimationFps().then((f) => setFps(f));
-    // 加载可见性
     window.petAPI.isPetVisible().then((v) => setIsVisible(v));
+    // 加载历史对话
+    window.petAPI.getHistory().then((h) => {
+      if (h && h.length > 0) setChatMessages(h);
+    });
   }, []);
 
   // ---- 加载 spritesheet 图片（宠物切换时） ----
@@ -62,15 +71,10 @@ export const PetApp: React.FC = () => {
       setSpriteImage(null);
       return;
     }
-
     const img = new Image();
     img.onload = () => setSpriteImage(img);
-    img.onerror = () => {
-      console.error(`[PetApp] Failed to load spritesheet for pet: ${currentPet.id}`);
-      setSpriteImage(null);
-    };
+    img.onerror = () => setSpriteImage(null);
     img.src = `http://localhost:${HTTP_SERVER_PORT}/api/pets/${currentPet.id}/spritesheet`;
-
     return () => {
       img.onload = null;
       img.onerror = null;
@@ -81,34 +85,37 @@ export const PetApp: React.FC = () => {
   useEffect(() => {
     const unsubState = window.petAPI.onStateChange((state) => {
       setCurrentState(state);
-      if (state === 'idle') {
-        setStatusText('');
-      }
+      if (state === 'idle') setStatusText('');
     });
-
-    const unsubTasks = window.petAPI.onTasksUpdate((newTasks) => {
-      setTasks(newTasks);
-    });
-
-    const unsubStatus = window.petAPI.onStatusTextChange((text) => {
-      setStatusText(text);
-    });
-
+    const unsubTasks = window.petAPI.onTasksUpdate((newTasks) => setTasks(newTasks));
+    const unsubStatus = window.petAPI.onStatusTextChange((text) => setStatusText(text));
     const unsubPet = window.petAPI.onPetChange((pet) => {
       setCurrentPet(pet);
       setCurrentState('idle');
       setStatusText('');
       setTasks([]);
     });
+    const unsubFps = window.petAPI.onAnimationFpsChange((newFps) => setFps(newFps));
+    const unsubVis = window.petAPI.onVisibilityChange((visible) => setIsVisible(visible));
 
-    // 监听动画帧速变化
-    const unsubFps = window.petAPI.onAnimationFpsChange((newFps) => {
-      setFps(newFps);
+    // 监听切换对话气泡
+    const unsubToggle = window.petAPI.onToggleChat(() => {
+      setChatVisible((prev) => !prev);
     });
 
-    // 监听可见性变化
-    const unsubVis = window.petAPI.onVisibilityChange((visible) => {
-      setIsVisible(visible);
+    // 监听流式回复
+    const unsubChunk = window.petAPI.onChatStreamChunk((chunk) => {
+      setStreamingText((prev) => prev + chunk);
+    });
+    const unsubDone = window.petAPI.onChatStreamDone((fullText) => {
+      setChatMessages((prev) => [...prev, { role: 'assistant', content: fullText, timestamp: Date.now() }]);
+      setStreamingText('');
+      setIsThinking(false);
+    });
+    const unsubError = window.petAPI.onChatStreamError((error) => {
+      setStreamingText('');
+      setIsThinking(false);
+      setChatMessages((prev) => [...prev, { role: 'assistant', content: `[出错] ${error}`, timestamp: Date.now() }]);
     });
 
     return () => {
@@ -118,6 +125,10 @@ export const PetApp: React.FC = () => {
       unsubPet();
       unsubFps();
       unsubVis();
+      unsubToggle();
+      unsubChunk();
+      unsubDone();
+      unsubError();
     };
   }, []);
 
@@ -127,19 +138,12 @@ export const PetApp: React.FC = () => {
       clearTimeout(idleTimerRef.current);
       idleTimerRef.current = null;
     }
-
-    if (currentState !== 'idle') {
-      return;
-    }
-
-    // 随机间隔 8~25 秒
+    if (currentState !== 'idle') return;
     const randomInterval = IDLE_MIN_INTERVAL + Math.random() * (IDLE_MAX_INTERVAL - IDLE_MIN_INTERVAL);
-
     idleTimerRef.current = setTimeout(() => {
       const pick = IDLE_ANIMATIONS[Math.floor(Math.random() * IDLE_ANIMATIONS.length)];
       setCurrentState(pick.state);
     }, randomInterval);
-
     return () => {
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
@@ -154,21 +158,12 @@ export const PetApp: React.FC = () => {
       clearTimeout(stateResetTimerRef.current);
       stateResetTimerRef.current = null;
     }
-
-    // 查找当前状态对应的持续时间
     const animConfig = IDLE_ANIMATIONS.find((a) => a.state === currentState);
-    // jumping/waving 有固定时长，其他随机动画也用配置时长
     let duration: number | null = null;
-    if (animConfig) {
-      duration = animConfig.duration;
-    }
-
+    if (animConfig) duration = animConfig.duration;
     if (duration !== null) {
-      stateResetTimerRef.current = setTimeout(() => {
-        setCurrentState('idle');
-      }, duration);
+      stateResetTimerRef.current = setTimeout(() => setCurrentState('idle'), duration);
     }
-
     return () => {
       if (stateResetTimerRef.current) {
         clearTimeout(stateResetTimerRef.current);
@@ -177,17 +172,26 @@ export const PetApp: React.FC = () => {
     };
   }, [currentState]);
 
-  // ---- 回调 ----
-  const handleHoverChange = useCallback((hovered: boolean) => {
-    setIsHovered(hovered);
-  }, []);
+  // ---- 发送消息 ----
+  const handleSend = useCallback(
+    (text: string) => {
+      const userMsg: ChatMessage = { role: 'user', content: text, timestamp: Date.now() };
+      const newMessages = [...chatMessages, userMsg];
+      setChatMessages(newMessages);
+      setStreamingText('');
+      setIsThinking(true);
+
+      // 发送给主进程（含历史消息）
+      window.petAPI.chat(newMessages);
+    },
+    [chatMessages],
+  );
 
   // ---- 计算气泡显示内容 ----
   const hoverText = isHovered ? STATE_TEXT_MAP[currentState] : '';
   const displayText = statusText || hoverText;
-  const bubbleVisible = tasks.length > 0 || displayText.length > 0;
+  const bubbleVisible = (tasks.length > 0 || displayText.length > 0) && !chatVisible;
 
-  // 如果不可见，不渲染任何内容
   if (!isVisible) return null;
 
   return (
@@ -196,13 +200,18 @@ export const PetApp: React.FC = () => {
         image={spriteImage}
         currentState={currentState}
         fps={fps}
-        onHoverChange={handleHoverChange}
+        onHoverChange={(hovered) => setIsHovered(hovered)}
       />
 
-      <SpeechBubble
-        text={displayText}
-        tasks={tasks}
-        visible={bubbleVisible}
+      <SpeechBubble text={displayText} tasks={tasks} visible={bubbleVisible} />
+
+      <ChatBubble
+        visible={chatVisible}
+        messages={chatMessages}
+        streamingText={streamingText}
+        isThinking={isThinking}
+        onClose={() => setChatVisible(false)}
+        onSend={handleSend}
       />
     </div>
   );

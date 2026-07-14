@@ -41,6 +41,36 @@ const petAPI: PetAPI = {
     return () => ipcRenderer.removeListener('pet-hover', handler);
   },
 
+  // 监听主进程切换对话气泡
+  onToggleChat: (callback: () => void) => {
+    const handler = () => callback();
+    ipcRenderer.on('toggle-chat', handler);
+    return () => ipcRenderer.removeListener('toggle-chat', handler);
+  },
+
+  // 发送对话消息
+  chat: (messages: any[]) => ipcRenderer.invoke('chat-send', messages),
+
+  // 获取对话历史
+  getHistory: () => ipcRenderer.invoke('history-get'),
+
+  // 监听流式回复
+  onChatStreamChunk: (callback: (chunk: string) => void) => {
+    const handler = (_event: unknown, chunk: string) => callback(chunk);
+    ipcRenderer.on('chat-stream-chunk', handler);
+    return () => ipcRenderer.removeListener('chat-stream-chunk', handler);
+  },
+  onChatStreamDone: (callback: (fullText: string) => void) => {
+    const handler = (_event: unknown, fullText: string) => callback(fullText);
+    ipcRenderer.on('chat-stream-done', handler);
+    return () => ipcRenderer.removeListener('chat-stream-done', handler);
+  },
+  onChatStreamError: (callback: (error: string) => void) => {
+    const handler = (_event: unknown, error: string) => callback(error);
+    ipcRenderer.on('chat-stream-error', handler);
+    return () => ipcRenderer.removeListener('chat-stream-error', handler);
+  },
+
   getCurrentPet: () => ipcRenderer.invoke('pet-get-current'),
 
   onPetChange: (callback) => {

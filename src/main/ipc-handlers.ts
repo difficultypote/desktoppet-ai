@@ -45,6 +45,9 @@ let isCurrentlyInteractive = false;
 /** 是否正在拖拽窗口 */
 let isDraggingWindow = false;
 
+/** 对话气泡是否打开（打开时整个窗口都需要交互） */
+let chatBubbleOpen = false;
+
 /**
  * 启动鼠标穿透轮询
  * 每 50ms 检查一次鼠标是否在桌宠窗口内
@@ -64,11 +67,26 @@ function startHoverPolling(): void {
     const [winX, winY] = petWin.getPosition();
     const [winW, winH] = petWin.getSize();
 
-    const isOver =
-      cursor.x >= winX &&
-      cursor.x <= winX + winW &&
-      cursor.y >= winY &&
-      cursor.y <= winY + winH;
+    let isOver: boolean;
+    if (chatBubbleOpen) {
+      // 对话气泡打开时，整个窗口都需要可交互
+      isOver =
+        cursor.x >= winX &&
+        cursor.x <= winX + winW &&
+        cursor.y >= winY &&
+        cursor.y <= winY + winH;
+    } else {
+      // 气泡关闭时，只检测桌宠 canvas 区域（右下角 192x208）
+      const petW = 192;
+      const petH = 208;
+      const petLeft = winX + winW - petW;
+      const petTop = winY + winH - petH;
+      isOver =
+        cursor.x >= petLeft &&
+        cursor.x <= petLeft + petW &&
+        cursor.y >= petTop &&
+        cursor.y <= petTop + petH;
+    }
 
     if (isOver && !isCurrentlyInteractive) {
       // 鼠标进入 → 关闭穿透
@@ -151,10 +169,16 @@ export function registerIpcHandlers(
     isCurrentlyInteractive = true; // 鼠标松开时通常还在窗口上
   });
 
-  // 单击桌宠：切回配置窗口
+  // 单击桌宠：切换对话气泡（不再打开设置窗口）
   ipcMain.on('pet-focus-app', () => {
-    configWin?.show();
-    configWin?.focus();
+    chatBubbleOpen = !chatBubbleOpen;
+    // 通知桌宠渲染层切换对话模式
+    petWin?.webContents.send('toggle-chat');
+    // 对话气泡打开时立即关闭穿透
+    if (chatBubbleOpen) {
+      petWin?.setIgnoreMouseEvents(false);
+      isCurrentlyInteractive = true;
+    }
   });
 
   // 右键菜单：使用 Electron 原生菜单（不受窗口边界限制）
@@ -165,8 +189,10 @@ export function registerIpcHandlers(
       {
         label: '打开设置',
         click: () => {
-          configWin?.show();
-          configWin?.focus();
+          if (configWin && !configWin.isDestroyed()) {
+            configWin.show();
+            configWin.focus();
+          }
         },
       },
       { type: 'separator' },
@@ -334,10 +360,13 @@ export function registerIpcHandlers(
       },
       onContent: (chunk: string) => {
         fullContent += chunk;
+        // 实时推送流式内容给桌宠窗口
+        petWin?.webContents.send('chat-stream-chunk', chunk);
       },
       onError: (error: string) => {
         sendPetState('failed');
         petWin?.webContents.send('status-text-changed', `出错了: ${error}`);
+        petWin?.webContents.send('chat-stream-error', error);
         scheduleStateReset(5000);
       },
       onDone: () => {
@@ -351,6 +380,8 @@ export function registerIpcHandlers(
         });
         const { saveHistory } = require('./ai-service');
         saveHistory(history);
+        // 通知桌宠窗口对话完成
+        petWin?.webContents.send('chat-stream-done', fullContent);
         scheduleStateReset(3000);
       },
     });

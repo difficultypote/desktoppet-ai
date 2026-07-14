@@ -10,10 +10,10 @@ export function createPetWindow(): BrowserWindow {
     screen.getPrimaryDisplay().workAreaSize;
 
   const win = new BrowserWindow({
-    width: 192,
-    height: 208,
-    x: screenWidth - 220, // 默认出现在右下角
-    y: screenHeight - 240,
+    width: 340,   // 加宽以容纳对话气泡
+    height: 420,  // 加高以容纳对话气泡
+    x: screenWidth - 360,
+    y: screenHeight - 440,
     transparent: true, // 关键：透明背景
     frame: false, // 关键：无边框
     alwaysOnTop: true, // 关键：始终置顶

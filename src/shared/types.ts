@@ -109,12 +109,24 @@ export interface PetAPI {
   moveWindow: (deltaX: number, deltaY: number) => void;
   /** 结束拖拽窗口 */
   endWindowDrag: () => void;
-  /** 单击桌宠 — 切回主应用窗口 */
+  /** 单击桌宠 — 切换对话气泡 */
   focusApp: () => void;
   /** 右键 — 弹出原生交互菜单 */
   showContextMenu: () => void;
   /** 监听鼠标悬停状态变化（由主进程轮询驱动） */
   onHoverChange: (callback: (hovered: boolean) => void) => () => void;
+  /** 监听主进程切换对话气泡 */
+  onToggleChat: (callback: () => void) => () => void;
+  /** 发送对话消息 */
+  chat: (messages: ChatMessage[]) => Promise<{ ok: boolean }>;
+  /** 获取对话历史 */
+  getHistory: () => Promise<ChatMessage[]>;
+  /** 监听流式回复片段 */
+  onChatStreamChunk: (callback: (chunk: string) => void) => () => void;
+  /** 监听流式回复完成 */
+  onChatStreamDone: (callback: (fullText: string) => void) => () => void;
+  /** 监听流式回复错误 */
+  onChatStreamError: (callback: (error: string) => void) => () => void;
   /** 获取当前宠物信息 */
   getCurrentPet: () => Promise<PetMetadata | null>;
   /** 监听宠物切换 */

@@ -18,6 +18,15 @@ app.commandLine.appendSwitch('no-sandbox');
 app.commandLine.appendSwitch('disable-gpu');
 app.commandLine.appendSwitch('ignore-certificate-errors');
 
+// ============================================================
+// 单实例锁：防止同时运行多个 DesktopPet AI
+// ============================================================
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  // 已有实例在运行，直接退出
+  app.quit();
+}
+
 // 将用户数据目录设置到系统 AppData（打包后可正常写入）
 // 开发模式使用项目内 .electron-data 目录
 if (!app.isPackaged) { app.setPath('userData', path.join(process.cwd(), '.electron-data')); }
