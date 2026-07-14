@@ -29,6 +29,9 @@ const IDLE_ANIMATIONS: { state: PetAnimationState; duration: number }[] = [
 const IDLE_MIN_INTERVAL = 8000;
 const IDLE_MAX_INTERVAL = 25000;
 
+/** 长期无交互进入休息的延迟（毫秒） */
+const REST_DELAY = 45000; // 45 秒无交互 → 休息
+
 export const PetApp: React.FC = () => {
   // ---- 状态 ----
   const [currentPet, setCurrentPet] = useState<PetMetadata | null>(null);
@@ -52,6 +55,23 @@ export const PetApp: React.FC = () => {
   // ---- refs ----
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stateResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const restTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 上一次 hover 状态，用于检测"进入"瞬间
+  const prevHoverRef = useRef(false);
+
+  /** 重置休息定时器（任何交互都应调用） */
+  const resetRestTimer = useCallback(() => {
+    if (restTimerRef.current) {
+      clearTimeout(restTimerRef.current);
+      restTimerRef.current = null;
+    }
+    // 如果当前在休息状态，唤醒回 idle
+    setCurrentState((prev) => (prev === 'waiting' ? 'idle' : prev));
+    // 启动新的休息定时器
+    restTimerRef.current = setTimeout(() => {
+      setCurrentState('waiting'); // 进入休息
+    }, REST_DELAY);
+  }, []);
 
   // ---- 加载当前宠物（挂载时） ----
   useEffect(() => {
@@ -136,7 +156,7 @@ export const PetApp: React.FC = () => {
   }, []);
 
   // ---- 空闲随机动画 ----
-  // 拖拽中不触发空闲动画
+  // 拖拽中 / 休息中 不触发空闲动画
   const effectiveState = dragOverrideState ?? currentState;
   useEffect(() => {
     if (idleTimerRef.current) {
@@ -144,7 +164,12 @@ export const PetApp: React.FC = () => {
       idleTimerRef.current = null;
     }
     if (dragOverrideState) return; // 拖拽中不启动空闲定时器
+    if (currentState === 'waiting') return; // 休息中不启动随机动画
     if (currentState !== 'idle') return;
+
+    // 进入 idle 时启动休息倒计时
+    resetRestTimer();
+
     const randomInterval = IDLE_MIN_INTERVAL + Math.random() * (IDLE_MAX_INTERVAL - IDLE_MIN_INTERVAL);
     idleTimerRef.current = setTimeout(() => {
       const pick = IDLE_ANIMATIONS[Math.floor(Math.random() * IDLE_ANIMATIONS.length)];
@@ -156,7 +181,7 @@ export const PetApp: React.FC = () => {
         idleTimerRef.current = null;
       }
     };
-  }, [currentState, dragOverrideState]);
+  }, [currentState, dragOverrideState, resetRestTimer]);
 
   // ---- 空闲动画自动恢复 idle ----
   useEffect(() => {
@@ -165,6 +190,7 @@ export const PetApp: React.FC = () => {
       stateResetTimerRef.current = null;
     }
     if (dragOverrideState) return; // 拖拽中不启动自动恢复
+    if (currentState === 'waiting') return; // 休息状态不自动恢复
     const animConfig = IDLE_ANIMATIONS.find((a) => a.state === currentState);
     let duration: number | null = null;
     if (animConfig) duration = animConfig.duration;
@@ -187,21 +213,41 @@ export const PetApp: React.FC = () => {
       setChatMessages(newMessages);
       setStreamingText('');
       setIsThinking(true);
+      resetRestTimer(); // 对话交互重置休息定时器
 
       // 发送给主进程（含历史消息）
       window.petAPI.chat(newMessages);
     },
-    [chatMessages],
+    [chatMessages, resetRestTimer],
   );
 
   // ---- 拖拽方向回调 ----
   const handleDragStateChange = useCallback((state: PetAnimationState) => {
     if (state === 'idle') {
       setDragOverrideState(null);
+      // 拖拽结束 → 重置休息定时器
+      resetRestTimer();
     } else {
       setDragOverrideState(state);
     }
-  }, []);
+  }, [resetRestTimer]);
+
+  // ---- hover 处理：进入时跳跃 + 重置休息定时器 ----
+  const handleHoverChange = useCallback((hovered: boolean) => {
+    setIsHovered(hovered);
+    // 检测"进入"瞬间（false → true）
+    if (hovered && !prevHoverRef.current) {
+      // 鼠标进入 → 触发跳跃（如果当前是 idle 或休息状态）
+      setCurrentState((prev) => {
+        if (prev === 'idle' || prev === 'waiting') {
+          return 'jumping';
+        }
+        return prev;
+      });
+      resetRestTimer();
+    }
+    prevHoverRef.current = hovered;
+  }, [resetRestTimer]);
 
   // ---- 计算气泡显示内容 ----
   const activeState = dragOverrideState ?? currentState;
@@ -217,7 +263,7 @@ export const PetApp: React.FC = () => {
         image={spriteImage}
         currentState={activeState}
         fps={fps}
-        onHoverChange={(hovered) => setIsHovered(hovered)}
+        onHoverChange={handleHoverChange}
         onDragStateChange={handleDragStateChange}
       />
 
@@ -234,3 +280,4 @@ export const PetApp: React.FC = () => {
     </div>
   );
 };
+

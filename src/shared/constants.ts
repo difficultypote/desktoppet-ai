@@ -110,7 +110,7 @@ export const STATE_TEXT_MAP: Record<PetAnimationState, string> = {
   waving: '完成！点击查看结果',
   jumping: '',
   failed: '出错了',
-  waiting: '等待你的输入',
+  waiting: '正在休息~ Zzz',
   running: '正在处理…',
   review: '正在思考…',
 };
