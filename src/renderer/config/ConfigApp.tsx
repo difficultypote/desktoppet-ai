@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LLMSettings from './LLMSettings';
 import PetManager from './PetManager';
 import ChatHistory from './ChatHistory';
@@ -19,6 +19,31 @@ const TABS: { key: Tab; label: string }[] = [
  */
 export default function ConfigApp() {
   const [activeTab, setActiveTab] = useState<Tab>('general');
+  const contentRef = useRef<HTMLElement | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // 切换 Tab 时重置内容区滚动位置到顶部
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+    setShowBackToTop(false);
+  }, [activeTab]);
+
+  // 监听滚动，超过 200px 时显示"回到顶部"按钮
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const handleScroll = () => setShowBackToTop(el.scrollTop > 200);
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleBackToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="app-container">
@@ -37,11 +62,21 @@ export default function ConfigApp() {
             </button>
           ))}
         </nav>
-        <main className="app-content">
+        <main className="app-content" ref={contentRef}>
           {activeTab === 'general' && <GeneralSettings />}
           {activeTab === 'llm' && <LLMSettings />}
           {activeTab === 'pets' && <PetManager />}
           {activeTab === 'chat' && <ChatHistory />}
+          {showBackToTop && (
+            <button
+              className="back-to-top-btn"
+              onClick={handleBackToTop}
+              title="回到顶部"
+              aria-label="回到顶部"
+            >
+              ↑
+            </button>
+          )}
         </main>
       </div>
     </div>

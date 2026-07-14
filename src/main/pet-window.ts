@@ -11,9 +11,9 @@ export function createPetWindow(): BrowserWindow {
 
   const win = new BrowserWindow({
     width: 340,   // 加宽以容纳对话气泡
-    height: 420,  // 加高以容纳对话气泡
+    height: 520,  // 加高以容纳完整对话气泡（420 → 520）
     x: screenWidth - 360,
-    y: screenHeight - 440,
+    y: screenHeight - 540,
     transparent: true, // 关键：透明背景
     frame: false, // 关键：无边框
     alwaysOnTop: true, // 关键：始终置顶

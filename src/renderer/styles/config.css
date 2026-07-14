@@ -218,6 +218,36 @@ body {
   background: rgba(255,255,255,0.15);
 }
 
+/* 回到顶部按钮 */
+.back-to-top-btn {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  background: rgba(20, 20, 22, 0.85);
+  color: #F5A623;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(245, 166, 35, 0.05) inset;
+  transition: all 0.25s ease;
+  z-index: 5;
+}
+.back-to-top-btn:hover {
+  background: var(--gold-gradient);
+  color: #0D0D0D;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(245, 166, 35, 0.35);
+}
+
 /* ---- 按钮 ---- */
 
 .btn {
