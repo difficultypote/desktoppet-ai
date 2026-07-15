@@ -9,6 +9,8 @@ export function createConfigWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 900,
     height: 680,
+    minWidth: 700,
+    minHeight: 500,
     title: 'DesktopPet 设置',
     frame: true, // 有标题栏
     alwaysOnTop: false, // 不置顶
