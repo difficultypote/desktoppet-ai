@@ -58,7 +58,7 @@ canvas { display: block; }
 .pet-container {
   position: relative;
   width: 340px;
-  height: 520px;            /* 与 pet-window 高度同步 */
+  height: 100vh;            /* 自适应窗口高度，避免超出被裁切 */
 }
 
 /* Canvas 定位在右下角 */
@@ -226,11 +226,11 @@ canvas { display: block; }
 
 .chat-bubble {
   position: absolute;
-  bottom: 200px;            /* 紧贴宠物画布顶部 */
+  bottom: 215px;            /* FRAME_HEIGHT(208) + 7px 间距 */
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
-  max-height: calc(100% - 210px); /* 容器高度 - 画布高度 - 间距 = 气泡可用高度 */
+  max-height: calc(100% - 225px); /* 100vh - 215px(bottom) - 10px(顶部留白) */
   height: auto;
   background: var(--pet-bg-glass);
   border-radius: var(--pet-radius);

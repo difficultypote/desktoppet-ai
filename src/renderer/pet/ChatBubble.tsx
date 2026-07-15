@@ -28,9 +28,12 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 自动滚动到底部
+  // 自动滚动到底部（手动设置 scrollTop，避免 scrollIntoView 传播到祖先元素）
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages, streamingText]);
 
   // 显示时自动聚焦输入框

@@ -25,9 +25,12 @@ export default function ChatHistory() {
       .catch(() => setLoading(false));
   }, []);
 
-  // 自动滚动到底部
+  // 自动滚动到底部（手动设置 scrollTop，避免 scrollIntoView 传播到祖先元素）
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
 
   const handleSend = async () => {
