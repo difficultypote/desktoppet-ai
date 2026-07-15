@@ -19,7 +19,7 @@ export default function GeneralSettings() {
     window.configAPI.getConfig().then((c) => {
       setConfig(c);
       setFps(c.animationFps || DEFAULT_FPS);
-    });
+    }).catch(() => {});
     fetch(`http://localhost:31750/api/pet/visible`)
       .then((r) => r.json())
       .then((data) => setPetVisible(data.visible ?? true))

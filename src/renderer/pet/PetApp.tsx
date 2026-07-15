@@ -79,13 +79,13 @@ export const PetApp: React.FC = () => {
       if (pet) {
         setCurrentPet(pet);
       }
-    });
-    window.petAPI.getAnimationFps().then((f) => setFps(f));
-    window.petAPI.isPetVisible().then((v) => setIsVisible(v));
+    }).catch(() => {});
+    window.petAPI.getAnimationFps().then((f) => setFps(f)).catch(() => {});
+    window.petAPI.isPetVisible().then((v) => setIsVisible(v)).catch(() => {});
     // 加载历史对话
     window.petAPI.getHistory().then((h) => {
       if (h && h.length > 0) setChatMessages(h);
-    });
+    }).catch(() => {});
   }, []);
 
   // ---- 加载 spritesheet 图片（宠物切换时） ----
