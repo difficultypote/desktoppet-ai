@@ -1,37 +1,52 @@
 /* ============================================================
-   pet.css — 深色沉浸 + 暖金渐变 + 玻璃拟态
+   pet.css — 清新浅色 iOS 风格
    桌宠透明悬浮窗口
    ============================================================ */
 
 :root {
-  /* 深色基底 */
-  --pet-bg-base: #0D0D0D;
-  --pet-bg-glass: rgba(13, 13, 13, 0.85);
-  --pet-bg-elevated: rgba(22, 22, 24, 0.9);
+  /* 浅色基底 */
+  --pet-bg-base: rgba(255, 255, 255, 0.01);
+  --pet-bg-glass: rgba(255, 255, 255, 0.82);
+  --pet-bg-elevated: rgba(255, 255, 255, 0.95);
+  --pet-bg-input: rgba(120, 120, 128, 0.08);
+  --pet-bg-input-focus: rgba(120, 120, 128, 0.12);
 
-  /* 暖金渐变 */
-  --pet-gold-1: #F5A623;
-  --pet-gold-2: #C97D2E;
-  --pet-gold-gradient: linear-gradient(135deg, #F5A623, #C97D2E);
-  --pet-gold-glow: rgba(245, 166, 35, 0.15);
-  --pet-amber: rgba(245, 166, 35, 0.12);
+  /* 马卡龙色系 */
+  --pet-coral: #FF8A80;
+  --pet-coral-soft: #FFEBEE;
+  --pet-mint: #7FD8BE;
+  --pet-mint-soft: #E6F9F3;
+  --pet-sky: #74B9FF;
+  --pet-sky-soft: #E3F2FD;
+  --pet-cream: #FFEAA7;
+  --pet-cream-soft: #FFF9E6;
+  --pet-lavender: #B39DDB;
+  --pet-lavender-soft: #F3E5F5;
+
+  /* 强调渐变 */
+  --pet-accent-gradient: linear-gradient(135deg, #FF8A80 0%, #FFB74D 100%);
+  --pet-user-msg-bg: linear-gradient(135deg, #74B9FF 0%, #5BC0DE 100%);
 
   /* 文字 */
-  --pet-text: #FFFFFF;
-  --pet-text-dim: #9A9A9A;
-  --pet-text-faint: #6A6A6A;
+  --pet-text: #1C1C1E;
+  --pet-text-dim: #8E8E93;
+  --pet-text-faint: #C7C7CC;
+  --pet-text-on-accent: #FFFFFF;
 
   /* 边框 */
-  --pet-border: rgba(255, 255, 255, 0.06);
-  --pet-border-light: rgba(255, 255, 255, 0.1);
-  --pet-border-gold: rgba(245, 166, 35, 0.25);
+  --pet-border: rgba(0, 0, 0, 0.04);
+  --pet-border-light: rgba(0, 0, 0, 0.06);
+  --pet-border-focus: rgba(116, 185, 255, 0.5);
 
   /* 阴影 */
-  --pet-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --pet-shadow-gold: 0 4px 20px rgba(245, 166, 35, 0.2);
+  --pet-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --pet-shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --pet-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
 
   /* 圆角 */
-  --pet-radius: 16px;
+  --pet-radius: 20px;
+  --pet-radius-sm: 14px;
+  --pet-radius-xs: 10px;
 
   /* 字体 */
   --pet-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC',
@@ -58,7 +73,7 @@ canvas { display: block; }
 .pet-container {
   position: relative;
   width: 340px;
-  height: 100vh;            /* 自适应窗口高度，避免超出被裁切 */
+  height: 100vh;
 }
 
 /* Canvas 定位在右下角 */
@@ -67,12 +82,13 @@ canvas { display: block; }
   position: absolute;
   bottom: 0;
   right: 0;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-  transition: filter 0.3s ease;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+  transition: filter 0.3s ease, transform 0.2s ease;
 }
 
 .pet-canvas:hover {
-  filter: drop-shadow(0 6px 24px rgba(245, 166, 35, 0.2));
+  filter: drop-shadow(0 8px 24px rgba(116, 185, 255, 0.25));
+  transform: translateY(-2px);
 }
 
 /* ---- 状态文本气泡 ---- */
@@ -83,13 +99,13 @@ canvas { display: block; }
   left: 50%;
   transform: translateX(-50%);
   max-width: 184px;
-  padding: 7px 13px;
+  padding: 8px 14px;
   background: var(--pet-bg-glass);
   color: var(--pet-text);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   font-family: var(--pet-font);
-  border-radius: 12px;
+  border-radius: var(--pet-radius-sm);
   text-align: center;
   pointer-events: none;
   opacity: 0;
@@ -100,9 +116,9 @@ canvas { display: block; }
   z-index: 10;
   -webkit-app-region: no-drag;
   border: 1px solid var(--pet-border);
-  box-shadow: var(--pet-shadow);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--pet-shadow-soft);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .speech-bubble.visible {
@@ -116,7 +132,7 @@ canvas { display: block; }
   max-height: 96px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 
 .speech-bubble.tasks::-webkit-scrollbar { width: 3px; }
@@ -137,20 +153,20 @@ canvas { display: block; }
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #4ade80;
+  background: var(--pet-mint);
   flex-shrink: 0;
-  box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 0 6px rgba(127, 216, 190, 0.5);
 }
 
 .task-dot.running, .task-dot.review {
-  background: var(--pet-gold-1);
+  background: var(--pet-coral);
   animation: dotPulse 1s ease-in-out infinite;
 }
 
-.task-dot.failed { background: #f87171; }
-.task-dot.waiting { background: #60a5fa; }
-.task-dot.waving { background: #4ade80; }
-.task-dot.idle { background: #6A6A6A; }
+.task-dot.failed { background: #FF6B6B; }
+.task-dot.waiting { background: var(--pet-sky); }
+.task-dot.waving { background: var(--pet-mint); }
+.task-dot.idle { background: var(--pet-text-faint); }
 
 .task-title {
   overflow: hidden;
@@ -164,19 +180,17 @@ canvas { display: block; }
 
 .context-menu {
   position: absolute;
-  background: var(--pet-bg-glass);
-  border-radius: 14px;
-  padding: 6px;
-  min-width: 160px;
+  background: var(--pet-bg-elevated);
+  border-radius: var(--pet-radius-sm);
+  padding: 8px;
+  min-width: 170px;
   font-size: 13px;
   font-family: var(--pet-font);
   color: var(--pet-text);
   box-shadow: var(--pet-shadow);
   z-index: 100;
   -webkit-app-region: no-drag;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--pet-border-light);
+  border: 1px solid var(--pet-border);
   animation: menuSlideIn 0.15s ease;
 }
 
@@ -186,26 +200,27 @@ canvas { display: block; }
 }
 
 .context-menu-item {
-  padding: 9px 14px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-radius: 8px;
+  gap: 10px;
+  border-radius: var(--pet-radius-xs);
+  color: var(--pet-text);
 }
 
 .context-menu-item:hover {
-  background: var(--pet-amber);
-  color: var(--pet-gold-1);
+  background: var(--pet-sky-soft);
+  color: #2D7BC9;
 }
 
 .context-menu-icon {
   display: inline-block;
-  width: 16px;
+  width: 18px;
   text-align: center;
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 15px;
+  opacity: 0.75;
 }
 
 /* ---- 动画 ---- */
@@ -217,7 +232,7 @@ canvas { display: block; }
 
 @keyframes dotPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  50% { opacity: 0.4; }
 }
 
 /* ============================================================
@@ -226,13 +241,13 @@ canvas { display: block; }
 
 .chat-bubble {
   position: absolute;
-  bottom: 215px;            /* FRAME_HEIGHT(208) + 7px 间距 */
+  bottom: 215px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
-  max-height: calc(100% - 225px); /* 100vh - 215px(bottom) - 10px(顶部留白) */
+  max-height: calc(100% - 225px);
   height: auto;
-  background: var(--pet-bg-glass);
+  background: var(--pet-bg-elevated);
   border-radius: var(--pet-radius);
   box-shadow: var(--pet-shadow);
   display: flex;
@@ -241,9 +256,7 @@ canvas { display: block; }
   overflow: hidden;
   animation: chatBubbleSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-app-region: no-drag;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--pet-border-light);
+  border: 1px solid var(--pet-border);
 }
 
 @keyframes chatBubbleSlideIn {
@@ -263,19 +276,19 @@ canvas { display: block; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--pet-border);
   flex-shrink: 0;
-  background: linear-gradient(135deg, var(--pet-amber), transparent);
+  background: linear-gradient(135deg, var(--pet-coral-soft), var(--pet-cream-soft));
 }
 
 .chat-bubble-title {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--pet-text);
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .chat-bubble-title::before {
@@ -283,25 +296,29 @@ canvas { display: block; }
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--pet-gold-gradient);
-  box-shadow: 0 0 8px var(--pet-gold-1);
+  background: var(--pet-accent-gradient);
+  box-shadow: 0 2px 8px rgba(255, 138, 128, 0.35);
 }
 
 .chat-bubble-close {
-  background: none;
+  background: rgba(120, 120, 128, 0.08);
   border: none;
   color: var(--pet-text-dim);
   cursor: pointer;
-  font-size: 16px;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-size: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   transition: all 0.15s ease;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-bubble-close:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--pet-text);
+  background: rgba(120, 120, 128, 0.16);
 }
 
 /* 消息列表 */
@@ -310,7 +327,7 @@ canvas { display: block; }
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px 14px;
+  padding: 14px 16px;
   min-height: 60px;
   scroll-behavior: smooth;
 }
@@ -318,36 +335,36 @@ canvas { display: block; }
 .chat-bubble-messages::-webkit-scrollbar { width: 4px; }
 .chat-bubble-messages::-webkit-scrollbar-track { background: transparent; }
 .chat-bubble-messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 2px;
 }
 .chat-bubble-messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.14);
 }
 
 .chat-bubble-empty {
   text-align: center;
-  color: var(--pet-text-faint);
+  color: var(--pet-text-dim);
   font-size: 13px;
-  padding: 28px 0;
+  padding: 32px 0;
   line-height: 1.6;
 }
 
 .chat-bubble-empty::before {
   content: '';
   display: block;
-  width: 36px;
-  height: 36px;
-  margin: 0 auto 12px;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 14px;
   border-radius: 50%;
-  background: var(--pet-gold-gradient);
-  opacity: 0.3;
+  background: var(--pet-accent-gradient);
+  opacity: 0.25;
   animation: emptyPulse 2s ease-in-out infinite;
 }
 
 @keyframes emptyPulse {
-  0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.1); opacity: 0.5; }
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.1); opacity: 0.4; }
 }
 
 /* 消息项 */
@@ -368,27 +385,27 @@ canvas { display: block; }
 .chat-msg.assistant { align-items: flex-start; }
 
 .chat-msg-text {
-  max-width: 85%;
-  padding: 8px 12px;
-  border-radius: 14px;
+  max-width: 86%;
+  padding: 9px 14px;
+  border-radius: 18px;
   font-size: 13px;
   line-height: 1.55;
   word-wrap: break-word;
   white-space: pre-wrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .chat-msg.user .chat-msg-text {
-  background: var(--pet-gold-gradient);
-  color: #0D0D0D;
+  background: var(--pet-user-msg-bg);
+  color: var(--pet-text-on-accent);
   font-weight: 500;
-  border-bottom-right-radius: 4px;
-  box-shadow: var(--pet-shadow-gold);
+  border-bottom-right-radius: 5px;
 }
 
 .chat-msg.assistant .chat-msg-text {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--pet-bg-input);
   color: var(--pet-text);
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 5px;
   border: 1px solid var(--pet-border);
 }
 
@@ -397,10 +414,10 @@ canvas { display: block; }
 .chat-msg-thinking {
   display: flex;
   gap: 5px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  border-bottom-left-radius: 4px;
+  padding: 11px 15px;
+  background: var(--pet-bg-input);
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
   border: 1px solid var(--pet-border);
 }
 
@@ -408,7 +425,7 @@ canvas { display: block; }
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--pet-gold-1);
+  background: var(--pet-coral);
   animation: thinkingDot 1.4s ease-in-out infinite;
 }
 
@@ -423,18 +440,19 @@ canvas { display: block; }
 /* 输入区域 */
 
 .chat-bubble-input-area {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-top: 1px solid var(--pet-border);
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .chat-bubble-input {
   width: 100%;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid var(--pet-border-light);
-  border-radius: 10px;
-  color: #fff;
+  padding: 11px 15px;
+  background: var(--pet-bg-input);
+  border: 1.5px solid transparent;
+  border-radius: var(--pet-radius-xs);
+  color: var(--pet-text);
   font-size: 13px;
   outline: none;
   transition: all 0.2s ease;
@@ -443,10 +461,10 @@ canvas { display: block; }
 }
 
 .chat-bubble-input:focus {
-  border-color: var(--pet-gold-1);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px var(--pet-gold-glow);
+  border-color: var(--pet-sky);
+  background: var(--pet-bg-input-focus);
+  box-shadow: 0 0 0 3px var(--pet-border-focus);
 }
 
-.chat-bubble-input::placeholder { color: rgba(255, 255, 255, 0.25); }
+.chat-bubble-input::placeholder { color: var(--pet-text-dim); }
 .chat-bubble-input:disabled { opacity: 0.5; cursor: not-allowed; }
