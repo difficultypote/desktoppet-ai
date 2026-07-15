@@ -140,6 +140,17 @@ export function startHttpServer(): express.Express {
         res.write(`data: ${JSON.stringify({ type: 'error', error })}\n\n`);
       },
       onDone: () => {
+        // 保存历史记录
+        const history = loadHistory();
+        history.push(...messages);
+        history.push({
+          role: 'assistant',
+          content: fullContent,
+          timestamp: Date.now(),
+        });
+        const { saveHistory } = require('./ai-service');
+        saveHistory(history);
+        
         res.write(`data: ${JSON.stringify({ type: 'done', fullContent })}\n\n`);
         res.end();
       },
