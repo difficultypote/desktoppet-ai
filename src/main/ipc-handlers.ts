@@ -22,6 +22,7 @@ import {
   loadConfig,
   saveConfig,
   loadHistory,
+  saveHistory,
   clearHistory,
   chatStream,
 } from './ai-service';
@@ -379,7 +380,6 @@ export function registerIpcHandlers(
             content: fullContent,
             timestamp: Date.now(),
           });
-          const { saveHistory } = require('./ai-service');
           saveHistory(history);
           // 通知桌宠窗口对话完成
           petWin?.webContents.send('chat-stream-done', fullContent);
