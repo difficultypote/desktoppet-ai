@@ -349,42 +349,48 @@ export function registerIpcHandlers(
     const config = loadConfig();
     let fullContent = '';
 
-    // 异步流式调用，驱动桌宠状态
-    chatStream(messages, config, {
-      onState: (state: AIServiceState, text?: string) => {
-        const petState = STATE_MAP[state];
-        sendPetState(petState);
-        if (text) {
-          petWin?.webContents.send('status-text-changed', text);
-        }
-      },
-      onContent: (chunk: string) => {
-        fullContent += chunk;
-        // 实时推送流式内容给桌宠窗口
-        petWin?.webContents.send('chat-stream-chunk', chunk);
-      },
-      onError: (error: string) => {
-        sendPetState('failed');
-        petWin?.webContents.send('status-text-changed', `出错了: ${error}`);
-        petWin?.webContents.send('chat-stream-error', error);
-        scheduleStateReset(5000);
-      },
-      onDone: () => {
-        // 保存到历史记录
-        const history = loadHistory();
-        history.push(...messages);
-        history.push({
-          role: 'assistant',
-          content: fullContent,
-          timestamp: Date.now(),
-        });
-        const { saveHistory } = require('./ai-service');
-        saveHistory(history);
-        // 通知桌宠窗口对话完成
-        petWin?.webContents.send('chat-stream-done', fullContent);
-        scheduleStateReset(3000);
-      },
-    });
+    try {
+      // 异步流式调用，驱动桌宠状态
+      await chatStream(messages, config, {
+        onState: (state: AIServiceState, text?: string) => {
+          const petState = STATE_MAP[state];
+          sendPetState(petState);
+          if (text) {
+            petWin?.webContents.send('status-text-changed', text);
+          }
+        },
+        onContent: (chunk: string) => {
+          fullContent += chunk;
+          // 实时推送流式内容给桌宠窗口
+          petWin?.webContents.send('chat-stream-chunk', chunk);
+        },
+        onError: (error: string) => {
+          sendPetState('failed');
+          petWin?.webContents.send('status-text-changed', `出错了: ${error}`);
+          petWin?.webContents.send('chat-stream-error', error);
+          scheduleStateReset(5000);
+        },
+        onDone: () => {
+          // 保存到历史记录
+          const history = loadHistory();
+          history.push(...messages);
+          history.push({
+            role: 'assistant',
+            content: fullContent,
+            timestamp: Date.now(),
+          });
+          const { saveHistory } = require('./ai-service');
+          saveHistory(history);
+          // 通知桌宠窗口对话完成
+          petWin?.webContents.send('chat-stream-done', fullContent);
+          scheduleStateReset(3000);
+        },
+      });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error('[IPC] chat-send error:', errorMsg);
+      petWin?.webContents.send('chat-stream-error', `内部错误: ${errorMsg}`);
+    }
 
     return { ok: true };
   });
